@@ -9,8 +9,18 @@ Read [README.md](README.md) for the project idea. Read [CONTRIBUTIONS.md](CONTRI
 + Keep tasks bounded. Prefer one small repository behavior with a pass/fail signal over a broad improvement story.
 + Preserve roles. Never blur the student attempt, verifier outcome, reward signal, teacher repair, and curated dataset row.
 + Do not perfect the slice. Reason the smallest vertical path end to end, then implement only that.
++ Work in Ponytail mode by default: question whether the work needs to exist, reuse what is already here, prefer stdlib/native features, avoid new dependencies, and ship the shortest diff that actually fixes the real path.
 
 When uncertain, ask: `What would make this objectively verifiable?`
+
+## Ponytail discipline
+
++ Read the relevant flow first. Small changes in the wrong place are not minimal.
++ Stop at the first rung that holds: skip speculative work, reuse local code, use stdlib/native features, use installed deps, then write the minimum code.
++ Fix root cause once where callers route through it. Do not patch only the named symptom if sibling paths stay broken.
++ No unrequested abstractions, factories, interfaces, config, or scaffolding for later.
++ Mark deliberate shortcuts with a `ponytail:` comment when the ceiling matters.
++ Non-trivial logic needs one runnable check when tests are approved; otherwise report the skipped check clearly.
 
 ## While creating tasks
 
