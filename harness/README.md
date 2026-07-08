@@ -57,6 +57,14 @@ data/runs/<run_id>/
   rlvr.jsonl
 ```
 
+To export runtime artifacts into Task 3 HF dataset shape:
+
+```bash
+uv run python -m harness.main export-hf-dataset data/runs --output-root datasets/crucible-demo
+```
+
+This command expects runtime task artifacts with `task.md`, `verifier.yaml`, `attempt.patch`, `trace.txt`, `reward.json`, and `teacher.patch`.
+
 Raw artifacts also get copied into `data/lake/`, with `data/manifest.jsonl`, `data/rewards.jsonl`, and `data/observations.jsonl` as append-only evidence indexes.
 
 ## Promotion boundary

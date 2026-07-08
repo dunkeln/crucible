@@ -105,6 +105,14 @@ uv run python -m harness.main run-task harness/examples/basic-python --promote
 
 That command applies the demo attempt in an isolated workspace, runs `verifier.yaml`, writes raw evidence under `data/runs/<run_id>/`, records reward evidence, and promotes one SFT/RLVR row.
 
+To export a Hugging Face-compatible dataset from runtime artifacts:
+
+```bash
+uv run python -m harness.main export-hf-dataset data/runs --output-root datasets/crucible-demo
+```
+
+The exporter reads task artifacts at runtime and writes `README.md`, `data/train.jsonl`, `data/validation.jsonl`, and `examples/<task_id>/` without embedding static dataset rows in the repository.
+
 ## The leverage
 
 Crucible is the loop:

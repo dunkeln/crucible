@@ -6,6 +6,7 @@ from pathlib import Path
 import click
 
 from harness.contracts import ApprovalMode, OperatorMode
+from harness.hf_dataset import export_hf_dataset
 from harness.promote import promote_run
 from harness.runner import run_task
 
@@ -71,6 +72,19 @@ def promote_run_command(run_dir: Path, dataset_root: str) -> None:
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(result.model_dump_json(indent=2))
+
+
+@main.command("export-hf-dataset")
+@click.argument("source_root", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-root", default="datasets/crucible-demo", show_default=True)
+@click.option("--validation-size", default=1, show_default=True, type=int)
+def export_hf_dataset_command(source_root: Path, output_root: str, validation_size: int) -> None:
+    """Export runtime task artifacts into the HF-compatible dataset shape."""
+    try:
+        result = export_hf_dataset(source_root, output_root, validation_size)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -6,6 +6,8 @@ Build the Crucible task/verifier corpus as a Hugging Face-compatible dataset exp
 
 This is the training-signal surface. The harness should be able to run these tasks, and the demo should be able to display or export the resulting rows.
 
+Dataset export content must be sourced from runtime Crucible artifacts provided by the product flow. Do not hardcode demo dataset rows in repository files.
+
 ## Owns
 
 Task 3 owns:
@@ -104,3 +106,11 @@ This task is done when another teammate can answer:
 + Do not add a database.
 
 Start with files. Add machinery only when the files become painful.
+
+## Runtime export command
+
+```bash
+uv run python -m harness.main export-hf-dataset <runtime_artifact_root> --output-root datasets/crucible-demo
+```
+
+`<runtime_artifact_root>` may be one task artifact directory or a parent directory containing multiple task artifact directories.
