@@ -57,6 +57,28 @@ A promoted row should let a researcher answer:
 + What was the corrected solution?
 + Can this row be safely used for SFT or RLVR training?
 
+## Operator model
+
+Crucible should support two operators over the same harness contract:
+
+```text
+human operator -> chooses task, approves seam crossings, promotes rows
+codex operator -> proposes attempts, runs bounded tools, writes draft artifacts
+```
+
+The switch is not a different architecture. It is a mode bit on the same run:
+
+```text
+operator: human | codex
+approval_mode: manual | proposed | auto_safe
+```
+
+Manual mode means the human executes or approves each sensitive step. Proposed mode means the Codex operator can prepare patches, verifier commands, rewards, and teacher repairs, but the human approves writes and promotion. Auto-safe mode is only for replayable, low-risk runs where the verifier and output paths are already fixed.
+
+The Codex operator may work on behalf of the human, but it should not own the promotion gate. Promotion is where human judgment mitigates agent autonomy in critical seams.
+
+For an Agents SDK implementation, keep the SDK agent inside the harness seam. The SDK owns the agent loop, tool calls, approvals, tracing, and run state; Crucible still owns the filesystem contract, verifier contract, reward contract, and promotion decision.
+
 ## Artifact shape
 
 Use structured files when they help the row stay inspectable:

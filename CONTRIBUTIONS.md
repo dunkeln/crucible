@@ -10,8 +10,18 @@ Owns running the loop.
 + runs the verifier
 + captures traces, logs, patches, and command output
 + writes reward records
++ owns the human/Codex operator switch
 
 Do not build UI here. Do not invent corpus format here unless the harness cannot run without it.
+
+Operator modes belong here:
+
+```text
+operator: human | codex
+approval_mode: manual | proposed | auto_safe
+```
+
+The Codex operator may draft artifacts and request tool actions. The human operator owns approval for seam crossings and promotion.
 
 ## 2. Demo surface
 
