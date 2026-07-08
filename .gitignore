@@ -5,6 +5,42 @@ build/
 dist/
 wheels/
 *.egg-info
+.pytest_cache/
+.ruff_cache/
 
 # Virtual environments
 .venv
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.secret
+secrets.*
+credentials*.json
+service-account*.json
+.netrc
+.pypirc
+
+# Harness-generated evidence
+/data/
+/harness/data/
+/runs/
+/harness/runs/
+/outputs/
+
+# Local databases
+*.duckdb
+*.duckdb.wal
+*.db
+*.sqlite
+*.sqlite3
+
+# Local dataset scratch, not curated JSONL
+datasets/**/.cache/
+datasets/**/tmp/
+datasets/**/private/
