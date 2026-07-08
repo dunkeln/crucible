@@ -2,7 +2,7 @@
 
 The harness is the backend loop for turning repository attempts into reward signal.
 
-It follows the Procdork harness pattern:
+It follows a simple data-harness pattern:
 
 ```text
 capture raw evidence -> observe behavior -> promote only durable value
@@ -36,14 +36,16 @@ timeout_seconds: 30
 
 ## Run it
 
+From the repository root:
+
 ```bash
-uv run python -m harness.main run-task harness/examples/basic-python --promote
+./crucible run-task harness/examples/basic-python --promote
 ```
 
 That creates:
 
 ```text
-data/runs/<run_id>/
+.crucible/runs/<run_id>/
   task.md
   verifier.yaml
   attempt.patch
@@ -57,7 +59,7 @@ data/runs/<run_id>/
   rlvr.jsonl
 ```
 
-Raw artifacts also get copied into `data/lake/`, with `data/manifest.jsonl`, `data/rewards.jsonl`, and `data/observations.jsonl` as append-only evidence indexes.
+Raw artifacts also get copied into `.crucible/lake/`, with `.crucible/manifest.jsonl`, `.crucible/rewards.jsonl`, and `.crucible/observations.jsonl` as append-only evidence indexes.
 
 ## Promotion boundary
 
@@ -73,14 +75,14 @@ The harness has hardcoded Codex operator roles:
 Generate an operator prompt from current evidence:
 
 ```bash
-uv run python -m harness.main operator-brief research_assistant --task-dir harness/examples/basic-python
-uv run python -m harness.main operator-brief operator --run-dir data/runs/<run_id>
+./crucible operator-brief research_assistant --task-dir harness/examples/basic-python
+./crucible operator-brief operator --run-dir .crucible/runs/<run_id>
 ```
 
 The Codex SDK integration should consume this brief later. Keep the verifier, reward, filesystem contract, and promotion gate in Crucible.
 
-Install the optional SDK dependency only when building that operator loop:
+For Codex-executed attempts:
 
 ```bash
-uv sync --extra codex
+./crucible run-codex-task harness/examples/basic-python --approval-mode auto_safe
 ```

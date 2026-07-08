@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if command -v uv >/dev/null 2>&1; then
+  if [[ "${1:-}" == "run-codex-task" ]]; then
+    exec uv run --project "$ROOT/harness" --extra codex python -m harness.main "$@"
+  fi
+  exec uv run --project "$ROOT/harness" python -m harness.main "$@"
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+  exec python3 -m harness.main "$@"
+fi
+
+echo "Crucible requires uv or python3 in PATH." >&2
+exit 1

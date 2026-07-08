@@ -5,6 +5,8 @@ description: Use when a user wants Codex to create verifier-backed coding tasks,
 
 # Crucible
 
+Project face: `assets/logo.png`.
+
 Crucible turns a code repo into a verifiable training gym for small models.
 
 The rule is: no reward without a verifier.
@@ -17,17 +19,17 @@ The rule is: no reward without a verifier.
 4. Use the harness CLI for evidence:
 
 ```bash
-uv run python -m harness.main run-task harness/examples/basic-python --promote
+./crucible run-task harness/examples/basic-python --promote
 ```
 
 5. Inspect the run artifacts before claiming success:
 
 ```text
-data/runs/<run_id>/trace.txt
-data/runs/<run_id>/reward.json
-data/runs/<run_id>/observation.json
-data/runs/<run_id>/sft.jsonl
-data/runs/<run_id>/rlvr.jsonl
+.crucible/runs/<run_id>/trace.txt
+.crucible/runs/<run_id>/reward.json
+.crucible/runs/<run_id>/observation.json
+.crucible/runs/<run_id>/sft.jsonl
+.crucible/runs/<run_id>/rlvr.jsonl
 ```
 
 ## Codex operator modes
@@ -40,8 +42,8 @@ Use hardcoded operator roles through the harness, not ad hoc prompting:
 For operator prompts, run:
 
 ```bash
-uv run python -m harness.main operator-brief research_assistant --task-dir harness/examples/basic-python
-uv run python -m harness.main operator-brief operator --run-dir data/runs/<run_id>
+./crucible operator-brief research_assistant --task-dir harness/examples/basic-python
+./crucible operator-brief operator --run-dir .crucible/runs/<run_id>
 ```
 
 ## Do not build

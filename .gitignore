@@ -32,6 +32,7 @@ service-account*.json
 /runs/
 /harness/runs/
 /outputs/
+/.crucible/
 
 # Local databases
 *.duckdb

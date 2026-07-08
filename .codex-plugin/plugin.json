@@ -31,6 +31,8 @@
       "Write"
     ],
     "websiteURL": "https://github.com/dunkeln/crucible",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
     "defaultPrompt": [
       "Use Crucible to inspect this repo for RLVR tasks",
       "Run the Crucible demo harness and summarize reward evidence",

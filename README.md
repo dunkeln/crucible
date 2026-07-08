@@ -1,5 +1,9 @@
 # Crucible
 
+![Crucible logo](assets/logo.png)
+
+**No reward without a verifier.**
+
 Crucible is a Codex-native plugin and RLVR harness for small code models.
 
 It turns real repository work into verifiable training signal. The point is not to make a model sound right. The point is to reward work that survives objective checks.
@@ -95,6 +99,16 @@ The plugin skill lets a scientist ask Codex to discover verifier-backed tasks, r
 
 The Codex SDK belongs behind the harness operator seam. Use it when Crucible needs a local Codex thread to act as the `research_assistant` or `operator`; keep all writes, verifier runs, reward records, and promotion decisions flowing through the harness contract.
 
+### Install via GitHub marketplace
+
+This repo includes a marketplace file at `.agents/plugins/marketplace.json`, so Codex can load Crucible directly from GitHub:
+
+```bash
+codex plugin marketplace add dunkeln/crucible
+```
+
+Then open the Codex plugin directory and install `Crucible` from the `Crucible Marketplace` source.
+
 ## Scientist workflow
 
 The first useful workflow is:
@@ -111,8 +125,8 @@ crucible export --rlvr
 The current MVP proves the core slice with:
 
 ```bash
-uv run python -m harness.main run-task harness/examples/basic-python --promote
-uv run python -m harness.main operator-brief research_assistant --task-dir harness/examples/basic-python
+./crucible run-task harness/examples/basic-python --promote
+./crucible operator-brief research_assistant --task-dir harness/examples/basic-python
 ```
 
 The first wow moment is not training a model. It is turning a repo into a verifiable SLM training dataset.
@@ -138,10 +152,10 @@ These are artifacts, not a schema mandate. Add the file when the row needs it.
 The runnable harness lives in [harness/](harness/).
 
 ```bash
-uv run python -m harness.main run-task harness/examples/basic-python --promote
+./crucible run-task harness/examples/basic-python --promote
 ```
 
-That command applies the demo attempt in an isolated workspace, runs `verifier.yaml`, writes raw evidence under `data/runs/<run_id>/`, records reward evidence, and promotes one SFT/RLVR row.
+That command applies the demo attempt in an isolated workspace, runs `verifier.yaml`, writes raw evidence under `.crucible/runs/<run_id>/`, records reward evidence, and promotes one SFT/RLVR row.
 
 ## The leverage
 
