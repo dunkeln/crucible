@@ -6,6 +6,7 @@ from pathlib import Path
 import click
 
 from harness.contracts import ApprovalMode, OperatorMode
+from harness.operators import CodexOperatorRole, operator_brief
 from harness.promote import promote_run
 from harness.runner import run_task
 
@@ -70,6 +71,16 @@ def promote_run_command(run_dir: Path, dataset_root: str) -> None:
         result = promote_run(run_dir, dataset_root)
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
+    click.echo(result.model_dump_json(indent=2))
+
+
+@main.command("operator-brief")
+@click.argument("role", type=click.Choice([item.value for item in CodexOperatorRole]))
+@click.option("--task-dir", type=click.Path(exists=True, file_okay=False, path_type=Path), default=None)
+@click.option("--run-dir", type=click.Path(exists=True, file_okay=False, path_type=Path), default=None)
+def operator_brief_command(role: str, task_dir: Path | None, run_dir: Path | None) -> None:
+    """Emit a hardcoded Codex operator brief for a task or run."""
+    result = operator_brief(CodexOperatorRole(role), task_dir=task_dir, run_dir=run_dir)
     click.echo(result.model_dump_json(indent=2))
 
 

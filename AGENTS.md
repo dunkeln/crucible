@@ -13,7 +13,11 @@ Read [README.md](README.md) for the project idea. Read [CONTRIBUTIONS.md](CONTRI
 
 When uncertain, ask: `What would make this objectively verifiable?`
 
+Crucible's product rule: no reward without a verifier.
+
 ## Ponytail discipline
+
+Reference: [Ponytail plugin](plugin://ponytail@ponytail). If the agent cannot resolve that link, follow the rules below directly.
 
 + Read the relevant flow first. Small changes in the wrong place are not minimal.
 + Stop at the first rung that holds: skip speculative work, reuse local code, use stdlib/native features, use installed deps, then write the minimum code.

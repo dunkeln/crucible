@@ -2,6 +2,8 @@
 
 Crucible has three early seams. Pick one before editing.
 
+The Codex plugin is the package wrapper over these seams, not a fourth seam.
+
 ## 1. Agent harness
 
 Owns running the loop.
@@ -57,3 +59,5 @@ what stays unchanged:
 ```
 
 Default to files over services, hardcoded demo data over databases, and one runnable vertical slice over reusable infrastructure.
+
+Plugin-facing changes belong in `.codex-plugin/` and `skills/` only when they make the existing harness easier for Codex to operate.

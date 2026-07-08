@@ -1,8 +1,10 @@
 # Crucible
 
-Crucible is a Codex-native RLVR harness for small code models.
+Crucible is a Codex-native plugin and RLVR harness for small code models.
 
 It turns real repository work into verifiable training signal. The point is not to make a model sound right. The point is to reward work that survives objective checks.
+
+Ponytail makes coding agents write less code. Crucible makes training agents produce verifiable reward signal.
 
 ## The simple story
 
@@ -78,6 +80,42 @@ Manual mode means the human executes or approves each sensitive step. Proposed m
 The Codex operator may work on behalf of the human, but it should not own the promotion gate. Promotion is where human judgment mitigates agent autonomy in critical seams.
 
 For an Agents SDK implementation, keep the SDK agent inside the harness seam. The SDK owns the agent loop, tool calls, approvals, tracing, and run state; Crucible still owns the filesystem contract, verifier contract, reward contract, and promotion decision.
+
+## Codex plugin shape
+
+Crucible ships as a Codex plugin:
+
+```text
+.codex-plugin/plugin.json
+skills/crucible/SKILL.md
+harness/
+```
+
+The plugin skill lets a scientist ask Codex to discover verifier-backed tasks, run the harness, inspect failures, curate teacher repairs, and export SFT/RLVR rows without learning a new platform.
+
+The Codex SDK belongs behind the harness operator seam. Use it when Crucible needs a local Codex thread to act as the `research_assistant` or `operator`; keep all writes, verifier runs, reward records, and promotion decisions flowing through the harness contract.
+
+## Scientist workflow
+
+The first useful workflow is:
+
+```bash
+crucible init
+crucible doctor
+crucible task discover --limit 5
+crucible rollout --model qwen2.5-coder-1.5b --n 4
+crucible verify
+crucible export --rlvr
+```
+
+The current MVP proves the core slice with:
+
+```bash
+uv run python -m harness.main run-task harness/examples/basic-python --promote
+uv run python -m harness.main operator-brief research_assistant --task-dir harness/examples/basic-python
+```
+
+The first wow moment is not training a model. It is turning a repo into a verifiable SLM training dataset.
 
 ## Artifact shape
 

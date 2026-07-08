@@ -62,3 +62,25 @@ Raw artifacts also get copied into `data/lake/`, with `data/manifest.jsonl`, `da
 ## Promotion boundary
 
 Promotion requires `teacher.patch`. A passing verifier is evidence, not enough by itself; the promoted row needs the corrected solution that should train the student model.
+
+## Codex operators
+
+The harness has hardcoded Codex operator roles:
+
++ `research_assistant` inspects tasks/runs and proposes research questions without writes.
++ `operator` drafts harness artifacts on behalf of the human, but does not own promotion.
+
+Generate an operator prompt from current evidence:
+
+```bash
+uv run python -m harness.main operator-brief research_assistant --task-dir harness/examples/basic-python
+uv run python -m harness.main operator-brief operator --run-dir data/runs/<run_id>
+```
+
+The Codex SDK integration should consume this brief later. Keep the verifier, reward, filesystem contract, and promotion gate in Crucible.
+
+Install the optional SDK dependency only when building that operator loop:
+
+```bash
+uv sync --extra codex
+```

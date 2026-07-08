@@ -9,3 +9,8 @@ dependencies = [
     "pydantic>=2.10.6",
     "pyyaml>=6.0.2",
 ]
+
+[project.optional-dependencies]
+codex = [
+    "openai-codex>=0.1.0b2",
+]
