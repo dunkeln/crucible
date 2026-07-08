@@ -1,5 +1,4 @@
-def main():
-    print("Hello from crucible!")
+from demo_surface.main import main
 
 
 if __name__ == "__main__":

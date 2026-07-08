@@ -44,3 +44,10 @@ service-account*.json
 datasets/**/.cache/
 datasets/**/tmp/
 datasets/**/private/
+
+# Frontend-generated files
+node_modules/
+.next/
+
+# Local package manager artifacts
+/package-lock.json
