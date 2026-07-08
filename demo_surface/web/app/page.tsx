@@ -1,160 +1,87 @@
 import Link from "next/link";
-import { demoApiBaseUrl, fetchHealth } from "../lib/demo-api";
-
-function RouteCard({
-  route,
-  description
-}: {
-  route: string;
-  description: string;
-}) {
-  return (
-    <div className="route-card">
-      <strong>{route}</strong>
-      <span>{description}</span>
-    </div>
-  );
-}
+import { demoApiBaseUrl, fetchRuns } from "../lib/demo-api";
 
 export default async function LandingPage() {
-  let apiHealthy = false;
+  let runs: Awaited<ReturnType<typeof fetchRuns>> = [];
 
   try {
-    const health = await fetchHealth();
-    apiHealthy = health.status === "ok";
+    runs = await fetchRuns();
   } catch {
-    apiHealthy = false;
+    runs = [];
   }
 
   return (
     <main className="page-shell">
       <section className="hero">
-        <span className="eyebrow">Demo Surface</span>
-        <h1>Crucible landing page, now in Next.js.</h1>
+        <span className="eyebrow">Crucible</span>
+        <h1>A model can try a thousand times a second. A person can only check so many.</h1>
         <p>
-          This frontend stays in the presentation seam. It reads the Python API,
-          exposes the current run clearly, and leaves model execution, verifier
-          logic, and corpus promotion outside the UI boundary.
+          Crucible does the checking the same way every time, so the pile of tries
+          turns into lessons worth keeping without a person grading each answer by
+          hand.
         </p>
         <div className="action-row">
           <Link className="button primary" href="/run">
-            Open run view
+            See one run
           </Link>
           <a className="button subtle" href={`${demoApiBaseUrl}/runs/demo`}>
-            Open raw JSON
-          </a>
-          <a className="button subtle" href={`${demoApiBaseUrl}/health`}>
-            Check API health
+            Open the raw data
           </a>
         </div>
       </section>
 
       <section className="status-strip">
         <article className="card">
-          <div className="label">API status</div>
-          <h3>{apiHealthy ? "Connected locally" : "API not reachable"}</h3>
+          <div className="label">The slow part</div>
+          <h3>The person is the ceiling</h3>
           <p>
-            Base URL: <span className="mono">{demoApiBaseUrl}</span>
-          </p>
-          <p style={{ marginTop: 14 }}>
-            <span className="status-pill">
-              {apiHealthy ? "healthy" : "offline"}
-            </span>
+            The model can try a million times. But if one person has to look at
+            every answer, the pile only shrinks as fast as one tired human.
           </p>
         </article>
 
         <article className="card">
-          <div className="label">Current loop</div>
-          <h3>One measured run</h3>
+          <div className="label">The move</div>
+          <h3>Repeat the boring part</h3>
           <p>
-            Task, attempt, verifier result, reward, teacher repair, and curated
-            row export are all reachable from the same API boundary.
+            The model tries. A checker says right or wrong. A score says how good.
+            A fix shows the better way. Each try is saved as a small lesson.
           </p>
         </article>
 
         <article className="card">
-          <div className="label">Seam guard</div>
-          <h3>Presentation only</h3>
+          <div className="label">Why trust it</div>
+          <h3>A test, not a hunch</h3>
           <p>
-            The frontend renders API output. It does not become the source of
-            truth for judging a run.
+            Every score comes from a check written before the model ever runs. The
+            answer passes or it does not, so a failed try is proof, not trash.
           </p>
         </article>
-      </section>
-
-      <section className="split-grid">
-        <div className="detail-card">
-          <div className="label">Routes</div>
-          <h2 className="section-title">Available entrypoints</h2>
-          <p className="section-copy">
-            The Next.js app gives you a browser-first landing page, while the
-            Python service keeps the JSON endpoints stable for CLI and future
-            harness integration.
-          </p>
-          <div className="route-list">
-            <RouteCard route="/" description="This Next.js landing page." />
-            <RouteCard route="/run" description="Human-readable run view in Next.js." />
-            <RouteCard
-              route={`${demoApiBaseUrl}/runs/demo`}
-              description="Raw JSON payload from the Python API."
-            />
-            <RouteCard
-              route={`${demoApiBaseUrl}/health`}
-              description="Liveness check for the Python API."
-            />
-            <RouteCard
-              route={`${demoApiBaseUrl}/view`}
-              description="Existing Python-rendered HTML view, kept for parity."
-            />
-          </div>
-        </div>
-
-        <div className="detail-stack">
-          <article className="detail-card">
-            <div className="label">Necessary holder</div>
-            <h3>Model connection</h3>
-            <p>
-              Placeholder only. A future harness can replace the static JSON with
-              model-produced run artifacts without changing the frontend shape.
-            </p>
-          </article>
-
-          <article className="detail-card">
-            <div className="label">Necessary holder</div>
-            <h3>Verifier wiring</h3>
-            <p>
-              Placeholder only. The UI surfaces verifier output but does not own
-              how that judgment is computed.
-            </p>
-          </article>
-
-          <article className="detail-card">
-            <div className="label">Necessary holder</div>
-            <h3>Corpus export</h3>
-            <p>
-              Placeholder only. Promotion into durable dataset rows stays outside
-              the landing page.
-            </p>
-          </article>
-        </div>
       </section>
 
       <section className="section-block">
-        <h2 className="section-title">What to do next</h2>
+        <h2 className="section-title">Runs the machine already made</h2>
         <p className="section-copy">
-          Keep the frontend small. The next useful changes are API-side:
-          replacing the local sample row with harness output, then introducing a
-          single math-task contract with an objective verifier.
+          Each one is a full loop: a task, a try, a check, a score, a fix, and a
+          saved lesson. Open one and read it top to bottom.
         </p>
-        <ul className="note-list">
-          <li>Swap the JSON file for a harness-produced artifact.</li>
-          <li>Keep the same run payload shape for both CLI and browser views.</li>
-          <li>Only add model execution after the verifier contract is fixed.</li>
-        </ul>
-        <p className="footer-note">
-          If the API is not running, start it with{" "}
-          <span className="mono">python -m demo_surface.api</span>.
-        </p>
+        {runs.length > 0 ? (
+          <div className="route-list" style={{ marginTop: 14 }}>
+            {runs.slice(0, 10).map((run) => (
+              <Link className="route-card" href={`/run/${run.run_id}`} key={run.run_id}>
+                <strong>{run.run_id}</strong>
+                <span>
+                  task: {run.task_id} | reward: {run.reward} | passed:{" "}
+                  {String(run.passed)}
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <ul className="note-list">
+            <li>No runs yet.</li>
+          </ul>
+        )}
       </section>
     </main>
   );

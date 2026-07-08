@@ -7,10 +7,104 @@ from urllib.parse import parse_qs, urlsplit
 
 
 DATA_PATH = Path(__file__).with_name("data") / "demo_run.json"
+RUNS_ROOT = Path("data/runs")
 
 
 def load_demo_run() -> dict[str, str]:
     return json.loads(DATA_PATH.read_text(encoding="utf-8"))
+
+
+def list_harness_runs() -> list[dict[str, str | int | bool]]:
+    if not RUNS_ROOT.exists():
+        return []
+
+    runs: list[dict[str, str | int | bool]] = []
+    run_dirs = sorted(
+        [path for path in RUNS_ROOT.iterdir() if path.is_dir() and (path / "run.json").exists()],
+        key=lambda path: (path / "run.json").stat().st_mtime,
+        reverse=True,
+    )
+    for run_dir in run_dirs:
+        run_data = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+        reward_data = run_data.get("reward", {})
+        runs.append(
+            {
+                "run_id": str(run_data.get("run_id", run_dir.name)),
+                "task_id": str(run_data.get("task_id", "unknown-task")),
+                "created_at": str(run_data.get("created_at", "")),
+                "passed": bool(reward_data.get("passed", False)),
+                "reward": int(reward_data.get("reward", 0)),
+            }
+        )
+    return runs
+
+
+def _safe_read_text(path: Path | None, default: str = "") -> str:
+    if not path:
+        return default
+    if not path.exists():
+        return default
+    return path.read_text(encoding="utf-8")
+
+
+def _path_from_run(run_dir: Path, value: str | None) -> Path | None:
+    if not value:
+        return None
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    return run_dir / path
+
+
+def load_harness_run(run_id: str) -> dict[str, str]:
+    run_dir = RUNS_ROOT / run_id
+    run_path = run_dir / "run.json"
+    if not run_path.exists():
+        raise FileNotFoundError(run_id)
+
+    run_data = json.loads(run_path.read_text(encoding="utf-8"))
+    artifacts = run_data.get("artifacts", {})
+    reward = run_data.get("reward", {})
+    attempt_patch = _safe_read_text(_path_from_run(run_dir, artifacts.get("attempt_patch")), "attempt patch not found")
+    teacher_patch = _safe_read_text(_path_from_run(run_dir, artifacts.get("teacher_patch")), "teacher.patch missing for this run")
+    task_text = _safe_read_text(_path_from_run(run_dir, artifacts.get("task")), "task.md missing")
+    observation_text = _safe_read_text(_path_from_run(run_dir, artifacts.get("observation")), "")
+    observation = json.loads(observation_text) if observation_text else {}
+
+    verifier_result = (
+        f"{'PASS' if reward.get('passed') else 'FAIL'}\n"
+        f"- pattern: {observation.get('pattern_id', 'unknown')}\n"
+        f"- reason: {reward.get('reason', 'no reason available')}\n"
+        f"- exit_code: {reward.get('exit_code', 'unknown')}"
+    )
+    reward_text = (
+        f"Reward: {reward.get('reward', 0)}\n"
+        f"Reason: {reward.get('reason', 'no reason available')}"
+    )
+    curated_row = json.dumps(
+        {
+            "run_id": run_data.get("run_id"),
+            "task_id": run_data.get("task_id"),
+            "passed": reward.get("passed"),
+            "reward": reward.get("reward"),
+        }
+    )
+    return {
+        "task": task_text.strip(),
+        "attempt": attempt_patch.strip(),
+        "verifier_result": verifier_result,
+        "reward": reward_text,
+        "teacher_repair": teacher_patch.strip(),
+        "curated_row": curated_row,
+    }
+
+
+def load_default_run() -> dict[str, str]:
+    runs = list_harness_runs()
+    if runs:
+        latest_run_id = str(runs[0]["run_id"])
+        return load_harness_run(latest_run_id)
+    return load_demo_run()
 
 
 def render_html_page(title: str, body: str) -> str:
@@ -209,102 +303,69 @@ def render_html_page(title: str, body: str) -> str:
 
 
 def render_landing_page(host: str, port: int) -> str:
-    base_url = f"http://{host}:{port}"
+    runs = list_harness_runs()
+    if runs:
+        run_items = "".join(
+            f"""
+        <div class="route-item">
+          <strong class="mono">{escape(str(run["run_id"]))}</strong>
+          task: {escape(str(run["task_id"]))} | reward: {escape(str(run["reward"]))} | passed: {escape(str(run["passed"]))}
+        </div>
+"""
+            for run in runs[:8]
+        )
+    else:
+        run_items = """
+        <div class="route-item">
+          <strong class="mono">No runs yet</strong>
+        </div>
+"""
     return render_html_page(
         "Crucible Demo Surface",
         f"""
 <main class="shell">
   <section class="hero">
-    <span class="eyebrow">Demo Surface</span>
-    <h1>Crucible API landing page</h1>
+    <span class="eyebrow">Crucible</span>
+    <h1>A model can try a thousand times a second. A person can only check so many.</h1>
     <p class="hero-copy">
-      This surface is the read-only entrypoint for one measured run. You can open the human view,
-      inspect the raw JSON, or redirect through the API switch without turning the UI into the source of truth.
+      Crucible does the checking the same way every time, so the pile of tries turns into
+      lessons worth keeping without a person grading each answer by hand.
     </p>
     <div class="actions">
-      <a class="button primary" href="/go?target=view">Open run view</a>
-      <a class="button" href="/go?target=json">Open raw JSON</a>
-      <a class="button" href="/health">Check health</a>
+      <a class="button primary" href="/go?target=view">See one run</a>
+      <a class="button" href="/go?target=json">Open the raw data</a>
     </div>
   </section>
 
   <section class="grid">
     <article class="panel">
-      <div class="label">Current status</div>
-      <h2>Connected locally</h2>
-      <p>The API is live on <span class="mono">{escape(base_url)}</span>.</p>
-      <p style="margin-top: 12px;"><span class="status">healthy</span></p>
+      <div class="label">The slow part</div>
+      <h2>The person is the ceiling</h2>
+      <p>The model can try a million times. But if one person has to look at every answer, the
+      pile only shrinks as fast as one tired human.</p>
     </article>
 
     <article class="panel">
-      <div class="label">What this shows</div>
-      <h2>One complete evidence loop</h2>
-      <p>Task, student attempt, verifier result, reward, teacher repair, and curated row export.</p>
+      <div class="label">The move</div>
+      <h2>Repeat the boring part</h2>
+      <p>The model tries. A checker says right or wrong. A score says how good. A fix shows the
+      better way. Each try is saved as a small lesson.</p>
     </article>
 
     <article class="panel">
-      <div class="label">Seam boundary</div>
-      <h2>Presentation only</h2>
-      <p>The surface reads API output. It does not own verifier logic, model execution, or corpus truth.</p>
+      <div class="label">Why trust it</div>
+      <h2>A test, not a hunch</h2>
+      <p>Every score comes from a check written before the model ever runs. The answer passes or
+      it does not, so a failed try is proof, not trash.</p>
     </article>
   </section>
 
   <section class="stack">
     <article class="panel">
-      <div class="label">Routes</div>
+      <div class="label">Runs the machine already made</div>
       <div class="route-list">
-        <div class="route-item">
-          <strong class="mono">/</strong>
-          Landing page for navigation and status.
-        </div>
-        <div class="route-item">
-          <strong class="mono">/view</strong>
-          Human-readable web view of the current demo run.
-        </div>
-        <div class="route-item">
-          <strong class="mono">/runs/demo</strong>
-          Raw JSON payload consumed by the CLI viewer.
-        </div>
-        <div class="route-item">
-          <strong class="mono">/go?target=view</strong>
-          Redirect helper for browser-oriented viewing.
-        </div>
-        <div class="route-item">
-          <strong class="mono">/go?target=json</strong>
-          Redirect helper for API-oriented inspection.
-        </div>
-        <div class="route-item">
-          <strong class="mono">/health</strong>
-          Minimal liveness check.
-        </div>
+        {run_items}
       </div>
-    </article>
-
-    <article class="grid">
-      <div class="panel">
-        <div class="label">Current holder</div>
-        <h3>Model connection</h3>
-        <p>Placeholder only. No inference engine is wired into this API yet.</p>
-      </div>
-      <div class="panel">
-        <div class="label">Current holder</div>
-        <h3>Verifier wiring</h3>
-        <p>Placeholder only. The payload exposes verifier output but does not run verification.</p>
-      </div>
-      <div class="panel">
-        <div class="label">Current holder</div>
-        <h3>Corpus export</h3>
-        <p>Placeholder only. The export shape is visible, but promotion logic lives elsewhere.</p>
-      </div>
-    </article>
-
-    <article class="panel">
-      <div class="label">Next integration points</div>
-      <ul class="placeholder-list">
-        <li>Swap the local JSON file for harness-produced run artifacts.</li>
-        <li>Replace the sample row with a math task row once the verifier contract is fixed.</li>
-        <li>Keep the same API shape so the CLI and browser views do not need to change.</li>
-      </ul>
     </article>
   </section>
 </main>
@@ -362,7 +423,7 @@ class DemoSurfaceHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/view":
-            self.respond_html(render_run_page(load_demo_run()))
+            self.respond_html(render_run_page(load_default_run()))
             return
 
         if path == "/go":
@@ -378,8 +439,32 @@ class DemoSurfaceHandler(BaseHTTPRequestHandler):
             self.respond({"status": "ok"})
             return
 
+        if path == "/runs":
+            self.respond({"runs": list_harness_runs()})
+            return
+
         if path == "/runs/demo":
-            self.respond(load_demo_run())
+            run_id = query.get("run_id", [None])[0]
+            if run_id:
+                try:
+                    self.respond(load_harness_run(run_id))
+                except FileNotFoundError:
+                    self.respond({"error": f"run not found: {run_id}"}, status=HTTPStatus.NOT_FOUND)
+                return
+
+            self.respond(load_default_run())
+            return
+
+        if path.startswith("/runs/"):
+            run_id = path.removeprefix("/runs/").strip()
+            if not run_id or run_id == "demo":
+                self.respond({"error": "run_id is required"}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            try:
+                self.respond(load_harness_run(run_id))
+            except FileNotFoundError:
+                self.respond({"error": f"run not found: {run_id}"}, status=HTTPStatus.NOT_FOUND)
             return
 
         self.respond({"error": "not found"}, status=HTTPStatus.NOT_FOUND)
