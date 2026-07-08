@@ -95,6 +95,16 @@ Use structured files when they help the row stay inspectable:
 
 These are artifacts, not a schema mandate. Add the file when the row needs it.
 
+## Harness quickstart
+
+The runnable harness lives in [harness/](harness/).
+
+```bash
+uv run python -m harness.main run-task harness/examples/basic-python --promote
+```
+
+That command applies the demo attempt in an isolated workspace, runs `verifier.yaml`, writes raw evidence under `data/runs/<run_id>/`, records reward evidence, and promotes one SFT/RLVR row.
+
 ## The leverage
 
 Crucible is the loop:

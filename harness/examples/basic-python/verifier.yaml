@@ -1,0 +1,3 @@
+command: "python check.py"
+pass_exit_codes: [0]
+timeout_seconds: 10
