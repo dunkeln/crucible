@@ -58,6 +58,8 @@ Same task. Same model. Same repo. With and without Crucible.
 
 ![Benchmark bars](examples/numbers/benchmark.svg)
 
+In the current follow-up benchmark, Crucible cut fresh input by 54% and the simple billable-token proxy by 50%. Output tokens rose 32%, because the harness still reports evidence.
+
 Numbers live in [examples/numbers/](examples/numbers/). Cost is only real when the run includes token usage, model name, and current per-token pricing.
 
 ## The Shape
