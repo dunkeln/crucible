@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Analytics from "@vercel/analytics/astro";
 
 const loop = [
   ["attempt", "Codex changes the project."],
@@ -110,5 +111,6 @@ const architecture = [
         </div>
       </section>
     </main>
+    <Analytics />
   </body>
 </html>
