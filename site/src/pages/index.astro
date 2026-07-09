@@ -2,14 +2,14 @@
 import "../styles/global.css";
 
 const loop = [
-  ["attempt", "Codex changes the work."],
-  ["proof", "The verifier decides."],
-  ["reward", "Evidence becomes signal."]
+  ["attempt", "Codex changes the project."],
+  ["proof", "Crucible runs the check."],
+  ["reward", "The result becomes signal."]
 ];
 
 const architecture = [
-  ["Codex chooses.", "The plugin selects the recipe and the small project edge."],
-  ["Crucible writes.", "The harness creates the repeatable artifact shape."],
+  ["Codex chooses.", "A recipe, a seam, a next move."],
+  ["Crucible writes.", "The repeatable shape around the work."],
   ["Verifier decides.", "Only checked behavior moves forward."]
 ];
 ---
@@ -35,76 +35,78 @@ const architecture = [
 
     <main>
       <section class="shell hero">
-        <div class="hero-copy">
+        <header class="hero-copy">
           <h1>Make Codex learn from work it can prove.</h1>
           <p>
-            Crucible is a Codex plugin for RLVR workflows. Codex selects the recipe. Crucible writes the artifact. The verifier decides what survives.
+            Crucible is a Codex plugin for work that has to survive checks. Codex selects the recipe. Crucible writes the artifact. The verifier decides what is worth keeping.
           </p>
-          <div class="hero-actions" aria-label="Primary actions">
-            <a class="button" href="#install">Install the plugin</a>
-            <a class="button secondary" href="#proof">See the proof</a>
-          </div>
-        </div>
+        </header>
 
-        <div class="proof-card" aria-label="Crucible benchmark">
+        <figure class="proof-card" aria-label="Crucible benchmark">
           <img src="/benchmark-crucible-red.svg" alt="Crucible benchmark showing lower fresh input and billable proxy than raw Codex." />
+        </figure>
+      </section>
+
+      <section id="install" class="section install-section">
+        <div class="shell install">
+          <header>
+            <h2>Install it where Codex already works.</h2>
+            <code>codex plugin marketplace add dunkeln/crucible</code>
+          </header>
+          <figure class="marketplace-shot" aria-label="Crucible plugin marketplace page">
+            <img src="/marketplace.png" alt="Crucible installed in the Codex plugin marketplace." />
+          </figure>
         </div>
       </section>
 
       <section class="section loop-section">
         <div class="shell loop-grid">
-          <div>
-            <h2>One loop. One proof. One promoted pattern.</h2>
-          </div>
-          <div class="loop-stack">
+          <header class="loop-copy">
+            <h2>Crucible turns checked work into reusable signal.</h2>
+            <p>Every run leaves a trail: what changed, what proved it, and what is worth carrying forward.</p>
+          </header>
+          <ol class="loop-stack" aria-label="Crucible loop">
             {loop.map(([title, body]) => (
-              <div class="loop-row">
+              <li class="loop-row">
                 <strong>{title}</strong>
                 <span>{body}</span>
-              </div>
+              </li>
             ))}
-            <div class="promote-box">promote the pattern</div>
-          </div>
+            <li class="promote-box">promote the pattern</li>
+          </ol>
         </div>
       </section>
 
       <section id="proof" class="section architecture-section">
         <div class="shell architecture">
-          <h2>Codex gets a stable factory.</h2>
-          <div class="architecture-grid">
+          <h2 class="codex-heading">
+            <img src="/codex.svg" alt="" />
+            <span>Codex gets a stable factory.</span>
+          </h2>
+          <ul class="architecture-grid" aria-label="Crucible operating model">
             {architecture.map(([title, body]) => (
-              <article>
+              <li>
                 <strong>{title}</strong>
                 <p>{body}</p>
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <section class="section numbers-section">
         <div class="shell numbers">
-          <div>
+          <header>
             <h2>The cost story appears on the second turn.</h2>
             <p>
-              Same loose follow-up task. Same model. One arm gets a plain folder. One arm gets a locked Crucible pack with failing evidence and a next brief.
+              Same loose follow-up task. Same model. One arm gets a plain folder. One arm gets a locked pack with evidence already in place.
             </p>
-          </div>
-          <div class="numbers-list" aria-label="Benchmark summary">
-            <div><strong>-54%</strong><span>fresh input</span></div>
-            <div><strong>-50%</strong><span>billable proxy</span></div>
-            <div><strong>100%</strong><span>verifier pass</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="install" class="section install-section">
-        <div class="shell install">
-          <div>
-            <h2>Install it where the work happens.</h2>
-            <p>Marketplace install. Recipe selection. Deterministic generation. Verified signal.</p>
-          </div>
-          <code>codex plugin marketplace add dunkeln/crucible</code>
+          </header>
+          <dl class="numbers-list" aria-label="Benchmark summary">
+            <div><dt>-54%</dt><dd>fresh input</dd></div>
+            <div><dt>-50%</dt><dd>billable proxy</dd></div>
+            <div><dt>100%</dt><dd>verifier pass</dd></div>
+          </dl>
         </div>
       </section>
     </main>
