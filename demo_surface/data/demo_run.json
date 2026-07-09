@@ -1,8 +1,0 @@
-{
-  "task": "Show one bounded Crucible task with an objective verifier outcome.",
-  "attempt": "Student attempt renders the run summary but forgets to include the teacher repair artifact.",
-  "verifier_result": "FAIL\n- required section present: task\n- required section present: attempt\n- required section present: verifier result\n- required section present: reward\n- required section missing: teacher repair",
-  "reward": "Reward: 0.35\nReason: the attempt exposed useful evidence, but the demo surface is incomplete until teacher repair is visible.",
-  "teacher_repair": "Add the missing teacher repair section so the demo shows the full task -> attempt -> verifier -> reward -> repair loop.",
-  "curated_row": "{\"task\":\"demo-surface-001\",\"status\":\"repairable\",\"verifier\":\"fail\",\"reward\":0.35}"
-}

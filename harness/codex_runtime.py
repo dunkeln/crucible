@@ -136,7 +136,7 @@ def map_approval_mode(codex_sdk: object, approval_mode: ApprovalMode):
 
 
 def map_sandbox(codex_sdk: object, role: CodexOperatorRole):
-    if role is CodexOperatorRole.RESEARCH_ASSISTANT:
+    if role is CodexOperatorRole.RESEARCHER:
         return codex_sdk.Sandbox.read_only
     return codex_sdk.Sandbox.workspace_write
 

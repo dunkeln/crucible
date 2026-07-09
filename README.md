@@ -6,172 +6,162 @@
 
 <h1 align="center">crucible</h1>
 
-**Codex turns verified work into learning signal.**
+**Codex turns checked work into learning signal.**
 
-Crucible is a Codex-native plugin and RLVR harness for small code models.
+Crucible is a Codex plugin for work that needs proof.
 
-It turns real repository work into verifiable training signal. Codex selects the recipe, Crucible generates the artifact, and the verifier decides what becomes reusable learning signal.
-
-Ponytail makes coding agents write less code. Crucible makes training agents produce verifiable reward signal.
-
-## The simple story
-
-Generic coding agents optimize for completing a task. Crucible optimizes for producing a clean training row from a task.
+It gives Codex a simple loop:
 
 ```text
-repo -> bounded task -> model attempt -> verifier result -> reward -> teacher repair -> SFT/RLVR row
+attempt -> check -> evidence -> promotion
 ```
 
-The distinction matters. A failed attempt is not waste. It is evidence. The verifier output, patch, logs, and repair explain what the model did, why it failed, and what correction is worth teaching.
+Codex can still write. Codex can still repair. Codex can still explain. The difference is that every useful step leaves a trail a human can inspect.
 
-## The harness bet
+## The Product
 
-Crucible borrows the shape of a measured harness:
+A coding agent can finish a task and still leave you with a question:
 
 ```text
-capture first -> observe second -> promote last
+Should this become something we teach from?
 ```
 
-Raw attempts and traces are kept as evidence. Verifier outcomes become observations. Reward records explain the judgment. Only after the task, verifier, and reward pattern are reusable does anything get promoted into a curated dataset row.
+Crucible makes that question answerable.
 
-That keeps the serial gate small. We do not design a grand schema before seeing useful failures. We capture the run, learn from the trace, and promote only the part that earns durability.
-
-## What stays raw
-
-Raw evidence should stay close to the run:
-
-+ attempted patch
-+ command output
-+ verifier logs
-+ failure trace
-+ reward reason
-+ teacher repair note
-
-Do not rewrite raw evidence to fit the first reward story. The raw trace is the source of truth.
-
-## What gets promoted
-
-Promotion is the boundary where noisy run evidence becomes durable training material.
+It keeps the task, the attempt, the check, the output, the reward, and the repair together. A failed attempt is not noise. It is the shape of the lesson.
 
 ```text
-raw attempt -> verifier observation -> reward record -> curated task -> stable verifier -> dataset row
+repo -> task -> attempt -> check -> evidence -> learning row
 ```
 
-A promoted row should let a researcher answer:
+The row can later feed whatever training path the researcher cares about. The README does not need to sell the acronym. The value is that the row has proof attached.
 
-+ What was the task?
-+ What did the model try?
-+ What did the verifier check?
-+ What reward was assigned?
-+ Why did attempts fail?
-+ What was the corrected solution?
-+ Can this row be safely used for SFT or RLVR training?
-
-## Operator model
-
-Crucible should support two operators over the same harness contract:
+## The Rule
 
 ```text
-human operator -> chooses task, approves seam crossings, promotes rows
-codex operator -> proposes attempts, runs bounded tools, writes draft artifacts
+No reward without a verifier.
 ```
 
-The switch is not a different architecture. It is a mode bit on the same run:
+A verifier is any executable check that can say what happened:
+
++ a test
++ a script
++ a SQL assertion
++ a data-quality check
++ a small judge program
+
+The check stays close to the project. Crucible does not hide reward logic in the plugin cache. It copies the task repo into a run workspace, executes the verifier there, and records what happened.
+
+## The Compression
+
+Without a harness, the human carries the whole run in their head.
 
 ```text
-operator: human | codex
-approval_mode: manual | proposed | auto_safe
+read task -> inspect attempt -> run check -> read logs -> judge failure -> write repair -> decide what stays
 ```
 
-Manual mode means the human executes or approves each sensitive step. Proposed mode means the Codex operator can prepare patches, verifier commands, rewards, and teacher repairs, but the human approves writes and promotion. Auto-safe mode is only for replayable, low-risk runs where the verifier and output paths are already fixed.
-
-The Codex operator may work on behalf of the human, but it should not own the promotion gate. Promotion is where human judgment mitigates agent autonomy in critical seams.
-
-For an Agents SDK implementation, keep the SDK agent inside the harness seam. The SDK owns the agent loop, tool calls, approvals, tracing, and run state; Crucible still owns the filesystem contract, verifier contract, reward contract, and promotion decision.
-
-## Codex plugin shape
-
-Crucible ships as a Codex plugin:
+With Crucible, the repeatable work becomes an evidence trail.
 
 ```text
-.codex-plugin/plugin.json
-skills/crucible/SKILL.md
-harness/
+work held by the human
+
+before Crucible  |████████████████████████████████████████| everything
+after Crucible   |████████                                | promote or reject
+                  capture, observe, verify, and package move into the harness
 ```
 
-The plugin skill lets a scientist ask Codex to discover verifier-backed tasks, run the harness, inspect failures, curate teacher repairs, and export SFT/RLVR rows without learning a new platform.
+The loop gets faster because the slow part gets smaller.
 
-The Codex SDK belongs behind the harness operator seam. Use it when Crucible needs a local Codex thread to act as the `research_assistant` or `operator`; keep all writes, verifier runs, reward records, and promotion decisions flowing through the harness contract.
+## The Operator Split
 
-### Install via GitHub marketplace
+```text
+Codex proposes.
+Crucible checks.
+The human promotes.
+```
 
-This repo includes a marketplace file at `.agents/plugins/marketplace.json`, so Codex can load Crucible directly from GitHub:
+Codex may draft the task, verifier, patch, or repair. Crucible runs the check and records the result. The human keeps the gate where judgment matters.
+
+That is the useful boundary: Codex can help create the evidence, but it should not quietly approve its own lesson.
+
+## Why It Feels Easier
+
+Crucible meets Codex where it already works.
+
+Install the plugin:
 
 ```bash
 codex plugin marketplace add dunkeln/crucible
 ```
 
-Then open the Codex plugin directory and install `Crucible` from the `Crucible Marketplace` source.
+Then ask Codex for a checked task, a verifier-backed repair, or a learning row. The plugin points Codex at the harness instead of making it invent the same scaffold every time.
 
-## Scientist workflow
+## What Works Today
 
-The first useful workflow is:
-
-```bash
-crucible init
-crucible doctor
-crucible task discover --limit 5
-crucible rollout --model qwen2.5-coder-1.5b --n 4
-crucible verify
-crucible export --rlvr
-```
-
-The current MVP proves the core slice with:
-
-```bash
-./crucible run-task harness/examples/basic-python --promote
-./crucible operator-brief research_assistant --task-dir harness/examples/basic-python
-```
-
-The first wow moment is not training a model. It is turning a repo into a verifiable SLM training dataset.
-
-## Artifact shape
-
-Use structured files when they help the row stay inspectable:
-
-+ `task.md`
-+ `verifier.yaml`
-+ `rollout.jsonl`
-+ `rewards.jsonl`
-+ `trace.txt`
-+ `teacher_patch.diff`
-+ `sft.jsonl`
-+ `rlvr.jsonl`
-+ `report.md`
-
-These are artifacts, not a schema mandate. Add the file when the row needs it.
-
-## Harness quickstart
-
-The runnable harness lives in [harness/](harness/).
+Run the demo task:
 
 ```bash
 ./crucible run-task harness/examples/basic-python --promote
 ```
 
-That command applies the demo attempt in an isolated workspace, runs `verifier.yaml`, writes raw evidence under `.crucible/runs/<run_id>/`, records reward evidence, and promotes one SFT/RLVR row.
+That command copies the example repo, applies the attempt, runs the verifier, writes the run evidence, and promotes the passing row.
 
-## The leverage
-
-Crucible is the loop:
+Evidence lands here:
 
 ```text
-bound the task
-define the verifier
-run the attempt
-score from evidence
-repair causally
-export the row
+.crucible/projects/<project>/runs/<run_id>/
+```
+
+Useful commands:
+
+```bash
+./crucible operator-brief researcher --task-dir harness/examples/basic-python
+./crucible operator-brief operator --run-dir .crucible/projects/<project>/runs/<run_id>
+./crucible scaffold math-rlvr --package crucible_demos
+```
+
+If the copied project has `uv.lock`, Python verifiers run in that project environment:
+
+```text
+uv run --project . python check.py
+```
+
+## Plugin Shape
+
+Crucible ships as a Codex plugin:
+
+```text
+.codex-plugin/plugin.json
+.codex-plugin/skills/crucible/SKILL.md
+harness/
+knowledge/
+```
+
+The skill tells Codex how to behave: inspect first, choose the seam, use the harness, and report evidence.
+
+The compact doctrine layer lives in [knowledge/](knowledge/). It gives Codex memory without making the memory the runtime.
+
+## A/B Proof
+
+The proof plan lives in [examples/](examples/).
+
+Each case compares:
+
++ `a_*_crucible`: Codex uses Crucible as the recipe and verifier harness.
++ `b_*_raw`: Codex builds the same thing directly.
+
+Record token use, files created, verifier command, evidence path, and reward shape.
+
+The point is not that raw Codex cannot finish. The point is whether Crucible makes the work smaller, more repeatable, and easier to trust.
+
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing the repo.
+
+The short rule:
+
+```text
+pick one seam, prove it with evidence, and stop
 ```
 
 Small first. Objective always. Promotion only when the evidence earns it.

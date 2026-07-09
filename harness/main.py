@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import click
@@ -21,44 +22,49 @@ def main() -> None:
 @main.command("run-task")
 @click.argument("task_dir", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.option("--attempt-patch", type=click.Path(exists=True, dir_okay=False, path_type=Path), default=None)
-@click.option("--runs-root", default=".crucible/runs", show_default=True)
-@click.option("--lake-root", default=".crucible/lake", show_default=True)
-@click.option("--manifest-jsonl", default=".crucible/manifest.jsonl", show_default=True)
-@click.option("--rewards-jsonl", default=".crucible/rewards.jsonl", show_default=True)
-@click.option("--observations-jsonl", default=".crucible/observations.jsonl", show_default=True)
+@click.option("--project", default=None, help="Project namespace for Crucible artifacts.")
+@click.option("--crucible-root", default=".crucible", show_default=True)
+@click.option("--runs-root", default=None)
+@click.option("--lake-root", default=None)
+@click.option("--manifest-jsonl", default=None)
+@click.option("--rewards-jsonl", default=None)
+@click.option("--observations-jsonl", default=None)
 @click.option("--operator", "operator_value", type=click.Choice([item.value for item in OperatorMode]), default=OperatorMode.HUMAN.value, show_default=True)
 @click.option("--approval-mode", type=click.Choice([item.value for item in ApprovalMode]), default=ApprovalMode.MANUAL.value, show_default=True)
 @click.option("--promote/--no-promote", default=False, show_default=True)
-@click.option("--dataset-root", default=".crucible/dataset", show_default=True)
+@click.option("--dataset-root", default=None)
 def run_task_command(
     task_dir: Path,
     attempt_patch: Path | None,
-    runs_root: str,
-    lake_root: str,
-    manifest_jsonl: str,
-    rewards_jsonl: str,
-    observations_jsonl: str,
+    project: str | None,
+    crucible_root: str,
+    runs_root: str | None,
+    lake_root: str | None,
+    manifest_jsonl: str | None,
+    rewards_jsonl: str | None,
+    observations_jsonl: str | None,
     operator_value: str,
     approval_mode: str,
     promote: bool,
-    dataset_root: str,
+    dataset_root: str | None,
 ) -> None:
     """Run one task attempt through verifier and reward capture."""
     try:
+        paths = project_paths(task_dir, project, crucible_root)
         record = run_task(
             task_dir=task_dir,
             attempt_patch=attempt_patch,
-            runs_root=runs_root,
-            lake_root=lake_root,
-            manifest_jsonl=manifest_jsonl,
-            rewards_jsonl=rewards_jsonl,
-            observations_jsonl=observations_jsonl,
+            runs_root=runs_root or paths["runs"],
+            lake_root=lake_root or paths["lake"],
+            manifest_jsonl=manifest_jsonl or paths["manifest"],
+            rewards_jsonl=rewards_jsonl or paths["rewards"],
+            observations_jsonl=observations_jsonl or paths["observations"],
             operator=OperatorMode(operator_value),
             approval_mode=ApprovalMode(approval_mode),
         )
         output: dict[str, object] = {"run": record.model_dump(mode="json")}
         if promote:
-            output["promotion"] = promote_run(record.run_dir, dataset_root).model_dump(mode="json")
+            output["promotion"] = promote_run(record.run_dir, dataset_root or paths["dataset"]).model_dump(mode="json")
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(output, indent=2, sort_keys=True))
@@ -110,34 +116,39 @@ def scaffold_math_rlvr_command(root: Path, package_name: str, model: str, force:
 @click.option("--role", type=click.Choice([item.value for item in CodexOperatorRole]), default=CodexOperatorRole.OPERATOR.value, show_default=True)
 @click.option("--model", default=None)
 @click.option("--approval-mode", type=click.Choice([item.value for item in ApprovalMode]), default=ApprovalMode.AUTO_SAFE.value, show_default=True)
-@click.option("--runs-root", default=".crucible/runs", show_default=True)
-@click.option("--lake-root", default=".crucible/lake", show_default=True)
-@click.option("--manifest-jsonl", default=".crucible/manifest.jsonl", show_default=True)
-@click.option("--rewards-jsonl", default=".crucible/rewards.jsonl", show_default=True)
-@click.option("--observations-jsonl", default=".crucible/observations.jsonl", show_default=True)
-@click.option("--dataset-root", default=".crucible/dataset", show_default=True)
-@click.option("--codex-root", default=".crucible/codex", show_default=True)
+@click.option("--project", default=None, help="Project namespace for Crucible artifacts.")
+@click.option("--crucible-root", default=".crucible", show_default=True)
+@click.option("--runs-root", default=None)
+@click.option("--lake-root", default=None)
+@click.option("--manifest-jsonl", default=None)
+@click.option("--rewards-jsonl", default=None)
+@click.option("--observations-jsonl", default=None)
+@click.option("--dataset-root", default=None)
+@click.option("--codex-root", default=None)
 @click.option("--promote/--no-promote", default=False, show_default=True)
 def run_codex_task_command(
     task_dir: Path,
     role: str,
     model: str | None,
     approval_mode: str,
-    runs_root: str,
-    lake_root: str,
-    manifest_jsonl: str,
-    rewards_jsonl: str,
-    observations_jsonl: str,
-    dataset_root: str,
-    codex_root: str,
+    project: str | None,
+    crucible_root: str,
+    runs_root: str | None,
+    lake_root: str | None,
+    manifest_jsonl: str | None,
+    rewards_jsonl: str | None,
+    observations_jsonl: str | None,
+    dataset_root: str | None,
+    codex_root: str | None,
     promote: bool,
 ) -> None:
     """Use Codex SDK to create an attempt patch, then run verifier/reward capture."""
     chosen_approval = ApprovalMode(approval_mode)
     try:
+        paths = project_paths(task_dir, project, crucible_root)
         codex_result = run_codex_attempt(
             task_dir=task_dir,
-            codex_root=codex_root,
+            codex_root=codex_root or paths["codex"],
             role=CodexOperatorRole(role),
             approval_mode=chosen_approval,
             model=model,
@@ -145,11 +156,11 @@ def run_codex_task_command(
         record = run_task(
             task_dir=task_dir,
             attempt_patch=Path(codex_result.patch_path),
-            runs_root=runs_root,
-            lake_root=lake_root,
-            manifest_jsonl=manifest_jsonl,
-            rewards_jsonl=rewards_jsonl,
-            observations_jsonl=observations_jsonl,
+            runs_root=runs_root or paths["runs"],
+            lake_root=lake_root or paths["lake"],
+            manifest_jsonl=manifest_jsonl or paths["manifest"],
+            rewards_jsonl=rewards_jsonl or paths["rewards"],
+            observations_jsonl=observations_jsonl or paths["observations"],
             operator=OperatorMode.CODEX,
             approval_mode=chosen_approval,
         )
@@ -158,10 +169,38 @@ def run_codex_task_command(
             "run": record.model_dump(mode="json"),
         }
         if promote:
-            output["promotion"] = promote_run(record.run_dir, dataset_root).model_dump(mode="json")
+            output["promotion"] = promote_run(record.run_dir, dataset_root or paths["dataset"]).model_dump(mode="json")
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(output, indent=2, sort_keys=True))
+
+
+def project_paths(task_dir: Path, project: str | None, crucible_root: str) -> dict[str, Path]:
+    root = Path(crucible_root) / "projects" / project_slug(task_dir, project)
+    return {
+        "runs": root / "runs",
+        "lake": root / "lake",
+        "manifest": root / "manifest.jsonl",
+        "rewards": root / "rewards.jsonl",
+        "observations": root / "observations.jsonl",
+        "dataset": root / "dataset",
+        "codex": root / "codex",
+    }
+
+
+def project_slug(task_dir: Path, project: str | None = None) -> str:
+    if project:
+        return slug(project)
+    resolved = task_dir.resolve()
+    for parent in resolved.parents:
+        if parent.name == ".crucible":
+            return slug(parent.parent.name)
+    return slug(Path.cwd().resolve().name)
+
+
+def slug(value: str) -> str:
+    cleaned = re.sub(r"[^a-zA-Z0-9_.-]+", "-", value.strip().lower()).strip("-._")
+    return cleaned or "default"
 
 
 if __name__ == "__main__":

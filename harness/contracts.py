@@ -66,6 +66,26 @@ class RunObservation(HarnessModel):
     approval_mode: ApprovalMode
 
 
+class LoopAttempt(HarnessModel):
+    run_id: str
+    passed: bool
+    reward: int
+    failure_class: str | None
+    reason: str
+
+
+class LoopState(HarnessModel):
+    loop_id: str
+    goal: str
+    recipe: str
+    attempts: list[LoopAttempt]
+    last_failure: str | None
+    next_action: str
+    iteration_cap: int
+    stop_reason: str
+    updated_at: datetime
+
+
 class RunRecord(HarnessModel):
     run_id: str
     task_id: str
@@ -75,6 +95,7 @@ class RunRecord(HarnessModel):
     approval_mode: ApprovalMode
     verifier: VerifierSpec
     reward: RewardRecord
+    loop: LoopState
     artifacts: dict[str, str]
     raw_artifacts: dict[str, str]
     created_at: datetime

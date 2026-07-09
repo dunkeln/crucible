@@ -1,0 +1,197 @@
+---
+import "../styles/global.css";
+
+const blueprint = [
+  "name workflow",
+  "select recipe",
+  "generate artifact",
+  "edit small bits",
+  "verify",
+  "promote pattern"
+];
+
+const split = [
+  ["human", "human serial path", "judgment stays precious", "task taste, risk, final promotion"],
+  ["machine", "machine repeat path", "attempts become cheap", "execute, observe, reward, repair"]
+];
+
+const stages = [
+  ["Prompting made models useful.", "Crucible makes their work inspectable."],
+  ["Context made attempts smarter.", "Crucible makes attempts comparable."],
+  ["Tools made agents active.", "Crucible makes action accountable."],
+  ["RLVR needs repeatable signal.", "Crucible turns checked work into that signal."]
+];
+
+const proof = [
+  ["A scientist names the workflow.", "The work has a finish line before Codex starts."],
+  ["Codex selects the recipe.", "The plugin generator creates the known-good shape."],
+  ["The verifier makes it durable.", "Only checked behavior moves forward as training signal."]
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Crucible is a Codex plugin for turning generated RLVR recipes into verified learning signal." />
+    <title>Crucible</title>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="shell nav-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Crucible</span>
+        </a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="shell hero">
+        <div class="hero-copy">
+          <h1>Make Codex learn from work it can prove.</h1>
+          <p>
+            Crucible is a Codex plugin for RLVR workflows. Codex selects the recipe, Crucible generates the stable artifact,
+            and only verified work becomes reusable learning signal.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#install">Install the plugin</a>
+            <a class="button secondary" href="#blueprint">View the blueprint</a>
+          </div>
+        </div>
+
+        <div class="signal-card" aria-label="Crucible proof ledger">
+          <div class="signal-row">
+            <strong>recipe</strong>
+            <p>Codex chooses the path.</p>
+          </div>
+          <div class="signal-row">
+            <strong>generate</strong>
+            <p>Crucible writes the shape.</p>
+          </div>
+          <div class="signal-row">
+            <strong>verify</strong>
+            <p>Truth comes from execution.</p>
+          </div>
+          <div class="signal-result">
+            <strong>promote the pattern</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="loop" class="section">
+        <div class="shell story">
+          <h2>It started with better prompts.</h2>
+          <div class="story-lines">
+            {stages.map(([line, after]) => (
+              <div class="story-line">
+                <strong>{line}</strong>
+                <span>{after}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="blueprint" class="section harness-section">
+        <div class="shell blueprint-intro">
+          <div>
+            <h2>Codex chooses the recipe. Crucible writes the artifact.</h2>
+          </div>
+        </div>
+
+        <div class="shell blueprint-board" aria-label="Crucible plugin blueprint">
+          {blueprint.map((title) => (
+            <article class="blueprint-block">
+              <h3>{title}</h3>
+            </article>
+          ))}
+        </div>
+
+        <div class="shell leverage-split" aria-label="Where Crucible speeds up research work">
+          {split.map(([kind, label, title, body]) => (
+            <div class={`leverage-card ${kind}`}>
+              <span>{label}</span>
+              <strong>{title}</strong>
+              <p>{body}</p>
+            </div>
+          ))}
+          <div class="leverage-note">
+            <strong>The Amdahl shape is the strategy.</strong>
+            <p>Human judgment remains the serial constraint. Crucible compresses the repeatable path around it: select recipe, generate artifact, verify, repair.</p>
+          </div>
+        </div>
+
+        <div class="shell amdahl-showcase" aria-label="Amdahl compression example">
+          <div class="amdahl-copy">
+            <span class="kicker">Compression math</span>
+            <h3>Keep the 20% that needs judgment. Compress the 80% that repeats.</h3>
+            <p>Recipe generation turns repeated artifact work into a factory step. At 10x cheaper, the full loop lands at 3.57x. The ceiling is 5x until the human gate changes.</p>
+          </div>
+          <div class="amdahl-bars">
+            <div class="amdahl-bar before">
+              <span class="serial">20%</span>
+              <span class="repeat">80%</span>
+            </div>
+            <div class="amdahl-bar after">
+              <span class="serial">20%</span>
+              <span class="repeat">8%</span>
+            </div>
+            <code>1 / (0.20 + 0.80 / 10) = 3.57x</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="section quiet">
+        <div class="shell split">
+          <div>
+            <h2>What the scientist gets.</h2>
+          </div>
+          <div class="change-list">
+            <div>
+              <strong>clean pressure</strong>
+              <span>Models are pushed toward behavior that survives execution and earns durable proof.</span>
+            </div>
+            <div>
+              <strong>operator leverage</strong>
+              <span>Codex can act on behalf of the scientist while the scientist keeps the promotion gate.</span>
+            </div>
+            <div>
+              <strong>compounding signal</strong>
+              <span>Useful failures and verified repairs become material for the next round of learning.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section proof-section">
+        <div class="shell proof-grid">
+          {proof.map(([title, body]) => (
+            <article>
+              <strong>{title}</strong>
+              <p>{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="install" class="section">
+        <div class="shell install">
+          <div>
+            <h2>Install it where the work happens.</h2>
+            <p>Crucible ships as a Codex plugin: marketplace install, recipe selection, deterministic generation, verified RLVR signal.</p>
+            <a class="button" href="https://github.com/dunkeln/crucible">View on GitHub</a>
+          </div>
+          <div class="logo-mark">
+            <span aria-hidden="true"></span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell">Crucible: capture first, observe second, promote last.</div>
+    </footer>
+  </body>
+</html>

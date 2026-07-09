@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -10,6 +11,9 @@ import yaml
 from harness.contracts import (
     ApprovalMode,
     CommandResult,
+    HarnessModel,
+    LoopAttempt,
+    LoopState,
     OperatorMode,
     RewardRecord,
     RunRecord,
@@ -41,14 +45,13 @@ def run_task(
     run_dir.mkdir(parents=True, exist_ok=False)
 
     copy_required(task_path / "task.md", run_dir / "task.md")
-    copy_required(task_path / "verifier.yaml", run_dir / "verifier.yaml")
     copy_workspace(task_path / "repo", workspace)
 
     patch_path = Path(attempt_patch) if attempt_patch else task_path / "attempt.patch"
     run_patch = run_dir / "attempt.patch"
     if patch_path.exists():
         shutil.copy2(patch_path, run_patch)
-        patch_result = run_command(["git", "apply", f"--directory={path_text(workspace)}", path_text(run_patch.resolve())], Path.cwd())
+        patch_result = run_command(["git", "apply", path_text(run_patch.resolve())], workspace)
     else:
         patch_result = None
 
@@ -56,7 +59,9 @@ def run_task(
     if teacher_path.exists():
         shutil.copy2(teacher_path, run_dir / "teacher.patch")
 
-    verifier_result = run_shell(verifier.command, workspace, verifier.timeout_seconds) if patch_result_ok(patch_result) else None
+    effective_verifier = verifier.model_copy(update={"command": verifier_command(verifier.command, workspace)})
+    write_yaml(run_dir / "verifier.yaml", effective_verifier)
+    verifier_result = run_shell(effective_verifier.command, workspace, effective_verifier.timeout_seconds) if patch_result_ok(patch_result) else None
     result_for_reward = verifier_result or patch_result
     if result_for_reward is None:
         raise ValueError("no attempt patch found and no verifier result was produced")
@@ -68,17 +73,19 @@ def run_task(
         passed=passed,
         reward=1 if passed else 0,
         reason="verifier passed" if passed else failure_reason(patch_result, verifier_result),
-        verifier_command=verifier.command,
+        verifier_command=effective_verifier.command,
         exit_code=result_for_reward.exit_code,
         failure_class=failure_class(passed, result_for_reward.exit_code, result_for_reward.stderr),
         operator=operator,
         approval_mode=approval_mode,
         observed_at=utc_now(),
     )
-    observation = observe_run(run_id, task_id, verifier, reward, operator, approval_mode)
+    observation = observe_run(run_id, task_id, effective_verifier, reward, operator, approval_mode)
+    loop = loop_state(task_id, reward)
 
     write_json(run_dir / "reward.json", reward.model_dump(mode="json"))
     write_json(run_dir / "observation.json", observation.model_dump(mode="json"))
+    write_json(run_dir / "loop.json", loop.model_dump(mode="json"))
     write_trace(run_dir / "trace.txt", task_id, patch_result, verifier_result, reward)
     append_jsonl(reward, rewards_jsonl)
     append_observation(observation, observations_jsonl)
@@ -91,6 +98,7 @@ def run_task(
         "trace": run_dir / "trace.txt",
         "reward": run_dir / "reward.json",
         "observation": run_dir / "observation.json",
+        "loop": run_dir / "loop.json",
     }
     raw_artifacts = load_files(artifact_paths, lake_root)
     append_manifest(raw_artifacts, manifest_jsonl)
@@ -102,8 +110,9 @@ def run_task(
         workspace_dir=path_text(workspace),
         operator=operator,
         approval_mode=approval_mode,
-        verifier=verifier,
+        verifier=effective_verifier,
         reward=reward,
+        loop=loop,
         artifacts={name: path_text(path) for name, path in artifact_paths.items() if path.exists()},
         raw_artifacts={name: artifact.storage_uri for name, artifact in raw_artifacts.items()},
         created_at=utc_now(),
@@ -112,9 +121,41 @@ def run_task(
     return record
 
 
+def loop_state(task_id: str, reward: RewardRecord) -> LoopState:
+    passed = reward.passed
+    return LoopState(
+        loop_id=f"loop_{reward.run_id.removeprefix('run_')}",
+        goal=task_id,
+        recipe=task_id,
+        attempts=[
+            LoopAttempt(
+                run_id=reward.run_id,
+                passed=passed,
+                reward=reward.reward,
+                failure_class=reward.failure_class,
+                reason=reward.reason,
+            )
+        ],
+        last_failure=None if passed else reward.reason,
+        next_action="promote" if passed else "repair",
+        iteration_cap=1,
+        stop_reason="verifier_passed" if passed else "iteration_cap_reached",
+        updated_at=utc_now(),
+    )
+
+
 def read_verifier(path: Path) -> VerifierSpec:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     return VerifierSpec.model_validate(data)
+
+
+def verifier_command(command: str, workspace: Path) -> str:
+    parts = shlex.split(command)
+    if not parts or parts[0] not in {"python", "python3"}:
+        return command
+    if not (workspace / "uv.lock").exists() or shutil.which("uv") is None:
+        return command
+    return " ".join(shlex.quote(part) for part in ["uv", "run", "--project", ".", *parts])
 
 
 def copy_required(source: Path, destination: Path) -> None:
@@ -211,6 +252,10 @@ def command_section(name: str, result: CommandResult) -> list[str]:
 
 def write_json(path: Path, value: dict) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def write_yaml(path: Path, value: HarnessModel) -> None:
+    path.write_text(yaml.safe_dump(value.model_dump(mode="json"), sort_keys=True), encoding="utf-8")
 
 
 def append_jsonl(model: RewardRecord, path: Path | str) -> None:

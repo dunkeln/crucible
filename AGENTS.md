@@ -1,6 +1,6 @@
 # Crucible - working philosophy
 
-Read [README.md](README.md) for the project idea. Read [CONTRIBUTIONS.md](CONTRIBUTIONS.md) before editing so you pick the right seam early. This file is how to work inside it.
+Read [README.md](README.md) for the project idea. Read [CONTRIBUTING.md](CONTRIBUTING.md) before editing so you pick the right seam early. This file is how to work inside it.
 
 ## Philosophy
 

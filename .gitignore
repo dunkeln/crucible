@@ -1,3 +1,6 @@
+# OS/editor noise
+.DS_Store
+
 # Python-generated files
 __pycache__/
 *.py[oc]
@@ -7,9 +10,17 @@ wheels/
 *.egg-info
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+htmlcov/
+*.log
 
 # Virtual environments
 .venv
+
+# Local Codex app state
+/.codex/
 
 # Local secrets and credentials
 .env
@@ -49,6 +60,10 @@ datasets/**/private/
 # Frontend-generated files
 node_modules/
 .next/
+.turbo/
+.vercel/
+site/.astro/
+site/dist/
 
 # Local package manager artifacts
 /package-lock.json

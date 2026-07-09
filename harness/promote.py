@@ -9,6 +9,8 @@ from harness.contracts import PromotionResult, RewardRecord, utc_now
 def promote_run(run_dir: Path | str, dataset_root: Path | str = "data/dataset") -> PromotionResult:
     path = Path(run_dir)
     reward = RewardRecord.model_validate_json((path / "reward.json").read_text(encoding="utf-8"))
+    if not reward.passed:
+        raise ValueError(f"promotion requires passing verifier: {reward.reason}")
     task = (path / "task.md").read_text(encoding="utf-8")
     verifier = (path / "verifier.yaml").read_text(encoding="utf-8")
     attempt = read_optional(path / "attempt.patch")

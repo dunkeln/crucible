@@ -96,7 +96,7 @@ Use these module responsibilities:
 The main smoke command must work:
 
 ```bash
-uv run python -m harness.main run-task harness/examples/basic-python --promote
+uv run --project harness python -m harness.main run-task harness/examples/basic-python --promote
 ```
 
 Expected behavior:
@@ -114,7 +114,7 @@ Expected behavior:
 Also support:
 
 ```bash
-uv run python -m harness.main promote-run data/runs/<run_id>
+uv run --project harness python -m harness.main promote-run data/runs/<run_id>
 ```
 
 ## Output Contract
@@ -188,7 +188,7 @@ The example should be boring and deterministic.
 
 Before calling this done, verify:
 
-+ `uv run python -m harness.main run-task harness/examples/basic-python --promote` exits 0.
++ `uv run --project harness python -m harness.main run-task harness/examples/basic-python --promote` exits 0.
 + the command prints JSON with run and promotion details.
 + the run directory contains `trace.txt`, `reward.json`, `observation.json`, `run.json`, `sft.jsonl`, and `rlvr.jsonl`.
 + `data/manifest.jsonl`, `data/rewards.jsonl`, and `data/observations.jsonl` are created.

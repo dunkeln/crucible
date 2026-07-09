@@ -34,6 +34,8 @@ pass_exit_codes: [0]
 timeout_seconds: 30
 ```
 
+`command` runs inside the copied `repo/` workspace. Keep `check.py`, reward functions, rubrics, and judge code in that project workspace; Crucible records the result, it does not host the reward code.
+
 ## Run it
 
 From the repository root:
@@ -45,7 +47,7 @@ From the repository root:
 That creates:
 
 ```text
-.crucible/runs/<run_id>/
+.crucible/projects/<project>/runs/<run_id>/
   task.md
   verifier.yaml
   attempt.patch
@@ -54,12 +56,15 @@ That creates:
   trace.txt
   reward.json
   observation.json
+  loop.json
   run.json
   sft.jsonl
   rlvr.jsonl
 ```
 
-Raw artifacts also get copied into `.crucible/lake/`, with `.crucible/manifest.jsonl`, `.crucible/rewards.jsonl`, and `.crucible/observations.jsonl` as append-only evidence indexes.
+Raw artifacts also get copied into `.crucible/projects/<project>/lake/`, with project-local manifest, reward, and observation indexes.
+
+Use `--project <name>` when one Crucible checkout runs tasks for multiple projects.
 
 ## Promotion boundary
 
@@ -69,14 +74,14 @@ Promotion requires `teacher.patch`. A passing verifier is evidence, not enough b
 
 The harness has hardcoded Codex operator roles:
 
-+ `research_assistant` inspects tasks/runs and proposes research questions without writes.
++ `researcher` inspects tasks/runs and proposes research questions without writes.
 + `operator` drafts harness artifacts on behalf of the human, but does not own promotion.
 
 Generate an operator prompt from current evidence:
 
 ```bash
-./crucible operator-brief research_assistant --task-dir harness/examples/basic-python
-./crucible operator-brief operator --run-dir .crucible/runs/<run_id>
+./crucible operator-brief researcher --task-dir harness/examples/basic-python
+./crucible operator-brief operator --run-dir .crucible/projects/<project>/runs/<run_id>
 ```
 
 The Codex SDK integration should consume this brief later. Keep the verifier, reward, filesystem contract, and promotion gate in Crucible.

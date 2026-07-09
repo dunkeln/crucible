@@ -7,7 +7,7 @@ from harness.contracts import HarnessModel
 
 
 class CodexOperatorRole(StrEnum):
-    RESEARCH_ASSISTANT = "research_assistant"
+    RESEARCHER = "researcher"
     OPERATOR = "operator"
 
 
@@ -29,16 +29,16 @@ class OperatorBrief(HarnessModel):
 
 
 OPERATORS: dict[CodexOperatorRole, CodexOperator] = {
-    CodexOperatorRole.RESEARCH_ASSISTANT: CodexOperator(
-        role=CodexOperatorRole.RESEARCH_ASSISTANT,
-        name="Crucible Research Assistant",
+    CodexOperatorRole.RESEARCHER: CodexOperator(
+        role=CodexOperatorRole.RESEARCHER,
+        name="Crucible Researcher",
         approval_policy="on-request",
         sandbox="read-only",
         can_write=False,
         can_promote=False,
         instructions=(
-            "Inspect Crucible task and run evidence. Identify bounded verifier-backed tasks, "
-            "summarize failure modes, and propose reward questions. Do not write files or promote rows."
+            "You are the Crucible researcher. You do not build. You read task and run evidence, "
+            "find bounded verifier-backed questions, name failure modes, and leave promotion untouched."
         ),
     ),
     CodexOperatorRole.OPERATOR: CodexOperator(
