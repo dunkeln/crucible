@@ -1,0 +1,2 @@
+exit_code: 1
+reason: symptom shim leaves root entrypoint coupled to missing demo_surface package contract

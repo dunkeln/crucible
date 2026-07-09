@@ -1,0 +1,9 @@
+diff --git a/demo_surface.py b/demo_surface.py
+new file mode 100644
+--- /dev/null
++++ b/demo_surface.py
+@@ -0,0 +1,4 @@
++from harness.main import main
++
++
++__all__ = ["main"]

@@ -1,0 +1,27 @@
+diff --git a/ingress_normalize.py b/ingress_normalize.py
+index 7081a0c..b113826 100644
+--- a/ingress_normalize.py
++++ b/ingress_normalize.py
+@@ -8,12 +8,19 @@ ALIASES = {
+ }
+ 
+ 
++def clean_key(value):
++    return "_".join(value.strip().lower().split())
++
++
++def clean_value(value):
++    return value.strip() if isinstance(value, str) else value
++
++
+ def normalize_record(record):
+     normalized = {}
+     for key, value in record.items():
+-        clean = key.strip().lower()
+-        if clean in ALIASES:
+-            normalized[ALIASES[clean]] = value
++        clean = clean_key(key)
++        normalized[ALIASES.get(clean, clean)] = clean_value(value)
+     return normalized
+ 
+ 

@@ -1,0 +1,38 @@
+{
+  "tasks": [
+    {
+      "attempt_patch": true,
+      "id": "ingress-normalize",
+      "pass_exit_codes": [
+        0
+      ],
+      "task_dir": "harness/examples/ingress-normalize",
+      "teacher_patch": true,
+      "timeout_seconds": 10,
+      "verifier_command": "python check.py"
+    },
+    {
+      "attempt_patch": true,
+      "id": "reward-boundary",
+      "pass_exit_codes": [
+        0
+      ],
+      "task_dir": "harness/examples/reward-boundary",
+      "teacher_patch": true,
+      "timeout_seconds": 10,
+      "verifier_command": "python check.py"
+    },
+    {
+      "attempt_patch": true,
+      "id": "failure-repair-curation",
+      "pass_exit_codes": [
+        0
+      ],
+      "task_dir": "harness/examples/failure-repair-curation",
+      "teacher_patch": true,
+      "timeout_seconds": 10,
+      "verifier_command": "python check.py"
+    }
+  ],
+  "version": 1
+}

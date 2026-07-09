@@ -1,0 +1,38 @@
+{
+  "tasks": [
+    {
+      "attempt_patch": true,
+      "id": "basic-python",
+      "pass_exit_codes": [
+        0
+      ],
+      "task_dir": "harness/examples/basic-python",
+      "teacher_patch": true,
+      "timeout_seconds": 10,
+      "verifier_command": "python check.py"
+    },
+    {
+      "attempt_patch": true,
+      "id": "benchmark-even",
+      "pass_exit_codes": [
+        0
+      ],
+      "task_dir": "harness/examples/benchmark-even",
+      "teacher_patch": true,
+      "timeout_seconds": 10,
+      "verifier_command": "python check.py"
+    },
+    {
+      "attempt_patch": true,
+      "id": "benchmark-normalize",
+      "pass_exit_codes": [
+        0
+      ],
+      "task_dir": "harness/examples/benchmark-normalize",
+      "teacher_patch": true,
+      "timeout_seconds": 10,
+      "verifier_command": "python check.py"
+    }
+  ],
+  "version": 1
+}

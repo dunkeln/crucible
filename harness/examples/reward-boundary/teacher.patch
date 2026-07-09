@@ -1,0 +1,17 @@
+diff --git a/answer_verifier.py b/answer_verifier.py
+index a0d9997..ebba9ff 100644
+--- a/answer_verifier.py
++++ b/answer_verifier.py
+@@ -1,5 +1,11 @@
+ SOURCE = "The contract total is 17 units. Delivery is due Friday."
+ 
+ 
+ def accepted(output, source=SOURCE):
+-    return output.get("answer") == "17 units"
++    evidence = output.get("evidence")
++    return (
++        output.get("answer") == "17 units"
++        and isinstance(evidence, list)
++        and "The contract total is 17 units." in evidence
++        and all(isinstance(item, str) and item in source for item in evidence)
++    )
