@@ -102,6 +102,13 @@ Summarize one existing run without opening every artifact:
 ./crucible summarize-run .crucible/projects/<project>/runs/<run_id>
 ```
 
+For follow-up Codex turns, ask Crucible for the next bounded action instead of rereading the task pack:
+
+```bash
+./crucible next researcher --pack .crucible/pack.lock.json --project benchmark
+./crucible next operator --pack .crucible/pack.lock.json --project benchmark --task basic-python
+```
+
 ## Promotion boundary
 
 Promotion requires `teacher.patch`. A passing verifier is evidence, not enough by itself; the promoted row needs the corrected solution that should train the student model.

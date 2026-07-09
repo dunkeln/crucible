@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import sys
 from pathlib import Path
 
 import click
@@ -9,6 +11,7 @@ import click
 from harness.codex_runtime import codex_attempt_summary, run_codex_attempt
 from harness.contracts import ApprovalMode, OperatorMode, path_text
 from harness.operators import CodexOperatorRole, operator_brief
+from harness.next_action import next_brief
 from harness.packs import append_rows, benchmark_row, list_runs, read_pack, read_run, run_summary, timed_run, write_pack
 from harness.promote import promote_run
 from harness.recipes import recipe_pack
@@ -107,6 +110,21 @@ def recipe_pack_command(source_dirs: tuple[Path, ...], output_root: Path, pack_p
     """Generate Crucible task contracts and a lockfile from existing task folders."""
     try:
         result = recipe_pack(source_dirs, output_root, pack_path, verifier_command, force)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, indent=2, sort_keys=True))
+
+
+@main.command("next")
+@click.argument("role", type=click.Choice([item.value for item in CodexOperatorRole]))
+@click.option("--pack", "pack_path", type=click.Path(exists=True, dir_okay=False, path_type=Path), default=".crucible/pack.lock.json", show_default=True)
+@click.option("--project", required=True, help="Project namespace for Crucible artifacts.")
+@click.option("--task", default=None, help="Task id to brief. Defaults to first failed task, then first pack task.")
+@click.option("--crucible-root", default=".crucible", show_default=True)
+def next_command(role: str, pack_path: Path, project: str, task: str | None, crucible_root: str) -> None:
+    """Emit a compact next-action brief without rediscovering task shape."""
+    try:
+        result = next_brief(role, pack_path, slug(project), Path(crucible_root), task, command=command_name())
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(result, indent=2, sort_keys=True))
@@ -341,6 +359,15 @@ def slug(value: str) -> str:
 
 def plugin_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def command_name() -> str:
+    if os.environ.get("CRUCIBLE_COMMAND"):
+        return os.environ["CRUCIBLE_COMMAND"]
+    invoked = Path(sys.argv[0])
+    if invoked.name == "main.py":
+        return "crucible"
+    return path_text(invoked)
 
 
 def resolve_pack_task_dir(pack_path: Path, task_dir: str) -> Path:
