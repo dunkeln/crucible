@@ -141,19 +141,6 @@ The skill tells Codex how to behave: inspect first, choose the seam, use the har
 
 The compact doctrine layer lives in [knowledge/](knowledge/). It gives Codex memory without making the memory the runtime.
 
-## A/B Proof
-
-The proof plan lives in [examples/](examples/).
-
-Each case compares:
-
-+ `a_*_crucible`: Codex uses Crucible as the recipe and verifier harness.
-+ `b_*_raw`: Codex builds the same thing directly.
-
-Record token use, files created, verifier command, evidence path, and reward shape.
-
-The point is not that raw Codex cannot finish. The point is whether Crucible makes the work smaller, more repeatable, and easier to trust.
-
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing the repo.
