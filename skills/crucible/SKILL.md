@@ -22,7 +22,7 @@ Loose prose is intent, not permission to rediscover the repo.
 1. If `.crucible/pack.lock.json` exists, run `next` before reading task files.
 2. Treat the `next` brief as working memory.
 3. Edit only files listed by an operator brief.
-4. Read full traces only when the brief points to failed evidence.
+4. Use brief excerpts before opening traces, rewards, task files, or verifier files.
 5. Run the listed harness check before reporting success.
 6. Never promote without a passing verifier and teacher repair.
 

@@ -43,6 +43,7 @@ def operator_brief(pack_path: Path, project: str, task: dict, run: RunRecord | N
         "task": task["id"],
         "edit": candidates[:1] if len(candidates) == 1 else candidates[:8],
         "task_dir": path_text(task_dir),
+        "task_brief": short_text(task_dir / "task.md"),
         "do_not_edit": [path_text(task_dir / "task.md"), path_text(task_dir / "verifier.yaml"), path_text(pack_path)],
         "check": f"{command} run-pack {path_text(pack_path)} --project {project}",
         "latest_evidence": compact_run(run),
@@ -62,13 +63,18 @@ def compact_task_state(task: dict, run: RunRecord | None) -> dict[str, object]:
 def compact_run(run: RunRecord | None) -> dict[str, object] | None:
     if not run:
         return None
+    trace = Path(run.run_dir) / "trace.txt"
     return {
         "run_dir": run.run_dir,
         "passed": run.reward.passed,
         "reward": run.reward.reward,
+        "reason": run.reward.reason,
+        "failure_class": run.reward.failure_class,
+        "failure_excerpt": failure_excerpt(trace),
+        "verifier_excerpt": verifier_excerpt(run),
         "reward_json": run.artifacts.get("reward"),
         "observation_json": run.artifacts.get("observation"),
-        "trace": path_text(Path(run.run_dir) / "trace.txt"),
+        "trace": path_text(trace),
     }
 
 
@@ -114,3 +120,39 @@ def source_candidates(repo_dir: Path) -> list[str]:
             continue
         files.append(path_text(path))
     return files or [path_text(repo_dir)]
+
+
+def short_text(path: Path, limit: int = 700) -> str:
+    if not path.exists():
+        return ""
+    text = " ".join(path.read_text(encoding="utf-8").split())
+    return text[:limit]
+
+
+def failure_excerpt(trace: Path, limit: int = 900) -> str:
+    if not trace.exists():
+        return ""
+    text = trace.read_text(encoding="utf-8")
+    marker = "stderr:"
+    if marker in text:
+        text = text.split(marker, 1)[1].split("\n\nreward:", 1)[0]
+    lines = [line.rstrip() for line in text.splitlines() if line.strip()]
+    return "\n".join(lines[-18:])[:limit]
+
+
+def verifier_excerpt(run: RunRecord, context: int = 5) -> str:
+    verifier = Path(run.workspace_dir) / Path(run.verifier.command.split()[-1]).name
+    if not verifier.exists():
+        return ""
+    lines = verifier.read_text(encoding="utf-8").splitlines()
+    selected = []
+    for index, line in enumerate(lines):
+        if "assert" in line:
+            start = max(0, index - context)
+            end = min(len(lines), index + context + 1)
+            selected = lines[start:end]
+            break
+    if not selected:
+        selected = lines[: min(len(lines), 18)]
+    offset = lines.index(selected[0]) if selected else 0
+    return "\n".join(f"{offset + i + 1}: {line}" for i, line in enumerate(selected[:24]))
