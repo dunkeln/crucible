@@ -1,0 +1,47 @@
+<svg viewBox="0 0 860 336" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Crucible follow-up benchmark</title>
+  <desc id="desc">Vertical grouped bars comparing raw Codex and Crucible on a loose ingress-normalization follow-up task. Both arms passed.</desc>
+  <text x="20" y="26" font-size="15" font-weight="600" fill="#8b949e">Same loose follow-up task, with and without the Crucible plugin. Lower is leaner.</text>
+  <text x="20" y="45" font-size="12" fill="#8b949e" opacity="0.85">Scenario: keep valid email rows, fill a missing name as unknown, then pass the verifier.</text>
+
+  <rect x="20" y="58" width="12" height="12" rx="2" fill="#8b949e"/>
+  <text x="38" y="69" font-size="13" fill="#8b949e">raw Codex</text>
+  <rect x="136" y="58" width="12" height="12" rx="2" fill="#c9184a"/>
+  <text x="154" y="69" font-size="13" fill="#8b949e">Crucible</text>
+
+  <line x1="82" y1="142" x2="820" y2="142" stroke="#8b949e" stroke-opacity="0.22" stroke-dasharray="4 4"/>
+  <text x="70" y="146" font-size="11" fill="#8b949e" text-anchor="end">100%</text>
+  <line x1="82" y1="195" x2="820" y2="195" stroke="#8b949e" stroke-opacity="0.14"/>
+  <text x="70" y="199" font-size="11" fill="#8b949e" text-anchor="end">50%</text>
+  <line x1="82" y1="247" x2="820" y2="247" stroke="#8b949e" stroke-opacity="0.24"/>
+  <text x="70" y="251" font-size="11" fill="#8b949e" text-anchor="end">0%</text>
+
+  <g>
+    <text x="195" y="268" font-size="13" font-weight="600" fill="#8b949e" text-anchor="middle">fresh input</text>
+    <rect x="145" y="142" width="34" height="105" rx="3" fill="#8b949e"/>
+    <rect x="211" y="199" width="34" height="48" rx="3" fill="#c9184a"/>
+    <text x="162" y="135" font-size="11" fill="#8b949e" text-anchor="middle">41.9K</text>
+    <text x="228" y="192" font-size="11" fill="#c9184a" font-weight="600" text-anchor="middle">19.4K</text>
+    <text x="195" y="288" font-size="12" font-weight="700" fill="#c9184a" text-anchor="middle">-54%</text>
+  </g>
+
+  <g>
+    <text x="430" y="268" font-size="13" font-weight="600" fill="#8b949e" text-anchor="middle">billable proxy</text>
+    <rect x="380" y="142" width="34" height="105" rx="3" fill="#8b949e"/>
+    <rect x="446" y="195" width="34" height="52" rx="3" fill="#c9184a"/>
+    <text x="397" y="135" font-size="11" fill="#8b949e" text-anchor="middle">43.6K</text>
+    <text x="463" y="188" font-size="11" fill="#c9184a" font-weight="600" text-anchor="middle">21.7K</text>
+    <text x="430" y="288" font-size="12" font-weight="700" fill="#c9184a" text-anchor="middle">-50%</text>
+  </g>
+
+  <g>
+    <text x="665" y="268" font-size="13" font-weight="600" fill="#8b949e" text-anchor="middle">output</text>
+    <rect x="615" y="142" width="34" height="105" rx="3" fill="#8b949e"/>
+    <rect x="681" y="108" width="34" height="139" rx="3" fill="#c9184a"/>
+    <text x="632" y="135" font-size="11" fill="#8b949e" text-anchor="middle">1.7K</text>
+    <text x="698" y="101" font-size="11" fill="#c9184a" font-weight="600" text-anchor="middle">2.2K</text>
+    <text x="665" y="288" font-size="12" font-weight="700" fill="#c9184a" text-anchor="middle">+32%</text>
+  </g>
+
+  <text x="82" y="324" font-size="11" fill="#8b949e" opacity="0.8">Independent A/B run: same model, same scenario, loose prose. Billable proxy = fresh input + output; no pricing multiplier included.</text>
+</svg>
