@@ -56,7 +56,7 @@ The honest measurement is a real Codex session doing real follow-up work.
 
 The task: fix an ingress-normalization bug where a valid email with a missing name should stay in the dataset as `unknown`. Same model, same loose user prompt, same verifier. One arm gets a plain task folder. One arm gets a locked Crucible pack with failing evidence and a `next` brief.
 
-![Benchmark bars](examples/numbers/benchmark.svg)
+![Benchmark bars](examples/numbers/benchmark-crucible-red.svg)
 
 vs raw Codex baseline: fresh input `-54%`, billable proxy `-50%`, output `+32%`, verifier pass `100%`.
 
