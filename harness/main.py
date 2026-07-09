@@ -10,6 +10,7 @@ from harness.contracts import ApprovalMode, OperatorMode
 from harness.operators import CodexOperatorRole, operator_brief
 from harness.promote import promote_run
 from harness.runner import run_task
+from harness.scaffold import DEFAULT_MODEL, scaffold_math_rlvr
 
 
 @click.group()
@@ -83,6 +84,25 @@ def operator_brief_command(role: str, task_dir: Path | None, run_dir: Path | Non
     """Emit a hardcoded Codex operator brief for a task or run."""
     result = operator_brief(CodexOperatorRole(role), task_dir=task_dir, run_dir=run_dir)
     click.echo(result.model_dump_json(indent=2))
+
+
+@main.group("scaffold")
+def scaffold_command() -> None:
+    """Write deterministic project scaffolds."""
+
+
+@scaffold_command.command("math-rlvr")
+@click.option("--root", type=click.Path(file_okay=False, path_type=Path), default=".", show_default=True)
+@click.option("--package", "package_name", default="crucible_demos", show_default=True)
+@click.option("--model", default=DEFAULT_MODEL, show_default=True)
+@click.option("--force/--no-force", default=False, show_default=True)
+def scaffold_math_rlvr_command(root: Path, package_name: str, model: str, force: bool) -> None:
+    """Create a tiny exact-answer math RLVR scaffold."""
+    try:
+        result = scaffold_math_rlvr(root, package_name, model, force)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, indent=2, sort_keys=True))
 
 
 @main.command("run-codex-task")

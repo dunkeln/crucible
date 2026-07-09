@@ -86,3 +86,9 @@ For Codex-executed attempts:
 ```bash
 ./crucible run-codex-task harness/examples/basic-python --approval-mode auto_safe
 ```
+
+For deterministic project setup, let Crucible write the scaffold instead of asking Codex to hand-author files:
+
+```bash
+./crucible scaffold math-rlvr --root ../crucible_demos --package crucible_demos
+```
