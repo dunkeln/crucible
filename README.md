@@ -1,6 +1,10 @@
-<h1 align="center">crucible</h1>
+<p align="center">
+  <picture>
+    <img src="assets/logo.png" width="160" alt="Crucible logo" style="border-radius: 28px;" />
+  </picture>
+</p>
 
-<img src="assets/logo.png" alt="Crucible logo" width="160" style="border-radius: 22px;" />
+<h1 align="center">crucible</h1>
 
 **Codex turns verified work into learning signal.**
 
