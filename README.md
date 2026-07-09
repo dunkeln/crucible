@@ -52,13 +52,13 @@ A verifier is the boundary between a plausible answer and a usable signal. It st
 
 ## The Numbers
 
-The honest measurement is a real Codex session doing real work, scored against the diff and artifacts it leaves behind.
+The honest measurement is a real Codex session doing real follow-up work.
 
-Same task. Same model. Same repo. With and without Crucible.
+The task: fix an ingress-normalization bug where a valid email with a missing name should stay in the dataset as `unknown`. Same model, same loose user prompt, same verifier. One arm gets a plain task folder. One arm gets a locked Crucible pack with failing evidence and a `next` brief.
 
 ![Benchmark bars](examples/numbers/benchmark.svg)
 
-In the current follow-up benchmark, Crucible cut fresh input by 54% and the simple billable-token proxy by 50%. Output tokens rose 32%, because the harness still reports evidence.
+vs raw Codex baseline: fresh input `-54%`, billable proxy `-50%`, output `+32%`, verifier pass `100%`.
 
 Numbers live in [examples/numbers/](examples/numbers/). Cost is only real when the run includes token usage, model name, and current per-token pricing.
 

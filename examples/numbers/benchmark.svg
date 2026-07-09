@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="940" height="560" viewBox="0 0 940 560" role="img" aria-labelledby="title desc">
   <title id="title">Crucible follow-up benchmark</title>
-  <desc id="desc">A bar chart comparing raw Codex and Crucible on fresh input tokens, billable proxy tokens, and output tokens for the same follow-up task.</desc>
+  <desc id="desc">A bar chart comparing raw Codex and Crucible on fresh input tokens, billable proxy tokens, and output tokens for the same ingress-normalization follow-up task.</desc>
   <rect width="940" height="560" fill="#ffffff"/>
-  <text x="48" y="62" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="30" font-weight="800" fill="#050505">Follow-up operator benchmark</text>
-  <text x="48" y="92" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="15" fill="#626a73">Same task. Fresh Codex sessions. Loose prose. Both arms passed.</text>
+  <text x="48" y="62" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="30" font-weight="800" fill="#050505">Numbers</text>
+  <text x="48" y="92" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="15" fill="#626a73">A loose follow-up task: keep valid emails, fill missing names as unknown. Both arms passed.</text>
 
   <line x1="48" y1="126" x2="892" y2="126" stroke="#111111" stroke-opacity="0.14"/>
 
@@ -15,28 +15,28 @@
   </g>
 
   <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
-    <text x="48" y="226" font-size="16" font-weight="800" fill="#111111">fresh input tokens</text>
+    <text x="48" y="226" font-size="16" font-weight="800" fill="#111111">fresh input</text>
     <rect x="260" y="206" width="520" height="28" rx="4" fill="#9aa3ad"/>
     <rect x="260" y="244" width="241" height="28" rx="4" fill="#050505"/>
-    <text x="798" y="226" font-size="15" font-weight="700" fill="#111111">41,895</text>
-    <text x="519" y="264" font-size="15" font-weight="700" fill="#111111">19,428</text>
+    <text x="798" y="226" font-size="15" font-weight="700" fill="#111111">41.9K</text>
+    <text x="519" y="264" font-size="15" font-weight="700" fill="#111111">19.4K</text>
     <text x="48" y="257" font-size="28" font-weight="900" fill="#050505">-54%</text>
 
-    <text x="48" y="330" font-size="16" font-weight="800" fill="#111111">billable proxy tokens</text>
+    <text x="48" y="330" font-size="16" font-weight="800" fill="#111111">billable proxy</text>
     <rect x="260" y="310" width="520" height="28" rx="4" fill="#9aa3ad"/>
     <rect x="260" y="348" width="258" height="28" rx="4" fill="#050505"/>
-    <text x="798" y="330" font-size="15" font-weight="700" fill="#111111">43,580</text>
-    <text x="536" y="368" font-size="15" font-weight="700" fill="#111111">21,652</text>
+    <text x="798" y="330" font-size="15" font-weight="700" fill="#111111">43.6K</text>
+    <text x="536" y="368" font-size="15" font-weight="700" fill="#111111">21.7K</text>
     <text x="48" y="361" font-size="28" font-weight="900" fill="#050505">-50%</text>
 
-    <text x="48" y="434" font-size="16" font-weight="800" fill="#111111">output tokens</text>
+    <text x="48" y="434" font-size="16" font-weight="800" fill="#111111">output</text>
     <rect x="260" y="414" width="394" height="28" rx="4" fill="#9aa3ad"/>
     <rect x="260" y="452" width="520" height="28" rx="4" fill="#050505"/>
-    <text x="672" y="434" font-size="15" font-weight="700" fill="#111111">1,685</text>
-    <text x="798" y="472" font-size="15" font-weight="700" fill="#111111">2,224</text>
+    <text x="672" y="434" font-size="15" font-weight="700" fill="#111111">1.7K</text>
+    <text x="798" y="472" font-size="15" font-weight="700" fill="#111111">2.2K</text>
     <text x="48" y="465" font-size="28" font-weight="900" fill="#111111">+32%</text>
   </g>
 
   <line x1="48" y1="508" x2="892" y2="508" stroke="#111111" stroke-opacity="0.14"/>
-  <text x="48" y="535" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" fill="#626a73">Source: /tmp/crucible-numbers-bench-v2. Billable proxy = fresh input + output; no pricing multiplier included.</text>
+  <text x="48" y="535" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" fill="#626a73">Billable proxy = fresh input + output. Crucible carries evidence, so output can rise while fresh input falls.</text>
 </svg>
