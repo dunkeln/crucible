@@ -22,6 +22,8 @@ RUNS_CSV_FIELDS = [
     "output_price_per_mtok",
     "tool_cost_usd",
     "regional_multiplier",
+    "passed",
+    "evidence_path",
 ]
 
 
@@ -79,6 +81,8 @@ def benchmark_row(task_id: str, arm: str, run_dir: Path, wall_seconds: float) ->
         "output_price_per_mtok": "NA",
         "tool_cost_usd": 0,
         "regional_multiplier": 1,
+        "passed": "true" if read_run(run_dir).reward.passed else "false",
+        "evidence_path": path_text(run_dir),
     }
 
 
@@ -120,6 +124,8 @@ def append_rows(path: Path, rows: list[dict[str, object]]) -> None:
 
 
 def patch_loc(path: Path) -> int:
+    if not path.exists():
+        return 0
     changed = 0
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.startswith(("+++", "---")):
@@ -130,6 +136,8 @@ def patch_loc(path: Path) -> int:
 
 
 def relative_path(path: Path) -> Path:
+    if path.resolve().is_absolute() and Path.cwd().resolve() == Path("/"):
+        return path.resolve()
     try:
         return path.resolve().relative_to(Path.cwd().resolve())
     except ValueError:

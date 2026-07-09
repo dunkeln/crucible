@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shlex
 import shutil
 import subprocess
@@ -172,7 +173,10 @@ def copy_workspace(source: Path, destination: Path) -> None:
 
 def run_command(command: list[str], cwd: Path, timeout_seconds: int = 30) -> CommandResult:
     started = utc_now()
-    completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True, timeout=timeout_seconds, check=False)
+    env = None
+    if command[:2] == ["git", "apply"]:
+        env = os.environ | {"GIT_CEILING_DIRECTORIES": path_text(Path(cwd).resolve().parent)}
+    completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True, timeout=timeout_seconds, check=False, env=env)
     return CommandResult(
         command=" ".join(command),
         cwd=path_text(cwd),

@@ -73,6 +73,12 @@ Use `--project <name>` when one Crucible checkout runs tasks for multiple projec
 
 ## Locked packs
 
+When the source already has task folders with `README.md` and a runnable check, generate the Crucible contracts:
+
+```bash
+./crucible recipe-pack tasks/* --output-root .crucible/tasks --pack .crucible/pack.lock.json
+```
+
 When a task set is known, freeze it once:
 
 ```bash

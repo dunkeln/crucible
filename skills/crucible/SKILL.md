@@ -27,6 +27,7 @@ Use Crucible as a harness worker, not a general helper.
 Fast paths:
 
 ```bash
+<crucible> recipe-pack <task-dir>... --output-root .crucible/tasks --pack .crucible/pack.lock.json
 <crucible> run-pack <pack-path> --project <project>
 <crucible> list-runs --project <project> --limit 5
 <crucible> summarize-run .crucible/projects/<project>/runs/<run_id>

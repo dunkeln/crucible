@@ -11,6 +11,7 @@ from harness.contracts import ApprovalMode, OperatorMode, path_text
 from harness.operators import CodexOperatorRole, operator_brief
 from harness.packs import append_rows, benchmark_row, list_runs, read_pack, read_run, run_summary, timed_run, write_pack
 from harness.promote import promote_run
+from harness.recipes import recipe_pack
 from harness.runner import run_task
 from harness.scaffold import DEFAULT_MODEL, scaffold_math_rlvr
 
@@ -94,6 +95,21 @@ def lock_pack_command(task_dirs: tuple[Path, ...], output_path: Path) -> None:
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps({"pack": path_text(output_path), **pack}, indent=2, sort_keys=True))
+
+
+@main.command("recipe-pack")
+@click.argument("source_dirs", nargs=-1, required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-root", type=click.Path(file_okay=False, path_type=Path), default=".crucible/tasks", show_default=True)
+@click.option("--pack", "pack_path", type=click.Path(dir_okay=False, path_type=Path), default=".crucible/pack.lock.json", show_default=True)
+@click.option("--verifier-command", default="python check.py", show_default=True)
+@click.option("--force/--no-force", default=False, show_default=True)
+def recipe_pack_command(source_dirs: tuple[Path, ...], output_root: Path, pack_path: Path, verifier_command: str, force: bool) -> None:
+    """Generate Crucible task contracts and a lockfile from existing task folders."""
+    try:
+        result = recipe_pack(source_dirs, output_root, pack_path, verifier_command, force)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, indent=2, sort_keys=True))
 
 
 @main.command("run-pack")
