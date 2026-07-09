@@ -1,4 +1,4 @@
-from demo_surface.main import main
+from harness.main import main
 
 
 if __name__ == "__main__":
