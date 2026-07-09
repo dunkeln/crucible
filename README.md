@@ -1,12 +1,12 @@
-# Crucible
+<h1 align="center">crucible</h1>
 
-![Crucible logo](assets/logo.png)
+<img src="assets/logo.png" alt="Crucible logo" width="160" style="border-radius: 22px;" />
 
-**No reward without a verifier.**
+**Codex turns verified work into learning signal.**
 
 Crucible is a Codex-native plugin and RLVR harness for small code models.
 
-It turns real repository work into verifiable training signal. The point is not to make a model sound right. The point is to reward work that survives objective checks.
+It turns real repository work into verifiable training signal. Codex selects the recipe, Crucible generates the artifact, and the verifier decides what becomes reusable learning signal.
 
 Ponytail makes coding agents write less code. Crucible makes training agents produce verifiable reward signal.
 
