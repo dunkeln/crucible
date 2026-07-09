@@ -1,7 +1,7 @@
 [project]
 name = "crucible-harness"
 version = "0.1.0"
-description = "Filesystem-first Crucible harness for verifier-backed SFT/RLVR rows."
+description = "Filesystem-first Crucible harness for verifier-backed learning rows."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

@@ -1,7 +1,5 @@
 # Crucible harness
 
-Read the root [AGENTS.md](../AGENTS.md) and [CONTRIBUTING.md](../CONTRIBUTING.md) first.
-
 This directory owns the agent harness seam:
 
 + run bounded task attempts

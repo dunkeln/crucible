@@ -11,7 +11,7 @@ capture raw evidence -> observe behavior -> promote only durable value
 Crucible's version:
 
 ```text
-task repo -> attempt patch -> verifier run -> reward record -> curated SFT/RLVR rows
+task repo -> attempt patch -> verifier run -> reward record -> curated learning rows
 ```
 
 ## Contract
@@ -41,8 +41,13 @@ timeout_seconds: 30
 From the repository root:
 
 ```bash
+./crucible doctor
 ./crucible run-task harness/examples/basic-python --promote
 ```
+
+`doctor` validates plugin shape and prints the next cheap harness commands.
+
+The default output is a compact evidence summary. Add `--json-full` when debugging needs the complete run record.
 
 That creates:
 
@@ -65,6 +70,31 @@ That creates:
 Raw artifacts also get copied into `.crucible/projects/<project>/lake/`, with project-local manifest, reward, and observation indexes.
 
 Use `--project <name>` when one Crucible checkout runs tasks for multiple projects.
+
+## Locked packs
+
+When a task set is known, freeze it once:
+
+```bash
+./crucible lock-pack harness/examples/basic-python harness/examples/benchmark-even harness/examples/benchmark-normalize --output harness/examples/benchmark-pack.lock.json
+```
+
+Replay it without rediscovering task paths or verifier commands:
+
+```bash
+./crucible run-pack harness/examples/benchmark-pack.lock.json --project benchmark --runs-csv .crucible/pack-runs.csv
+```
+
+The lockfile stores task ids, task dirs, verifier commands, timeout rules, and whether attempt/teacher patches exist. It is the cheap path for repeated benchmark and recipe runs.
+
+`run-pack` prints only task, pass/fail, reward, run path, and timing by default. Add `--json-full` when debugging needs the complete run records.
+
+Summarize one existing run without opening every artifact:
+
+```bash
+./crucible list-runs --project benchmark --limit 5
+./crucible summarize-run .crucible/projects/<project>/runs/<run_id>
+```
 
 ## Promotion boundary
 
@@ -91,6 +121,8 @@ For Codex-executed attempts:
 ```bash
 ./crucible run-codex-task harness/examples/basic-python --approval-mode auto_safe
 ```
+
+This also prints compact evidence by default. Add `--json-full` when the SDK response or full run record matters.
 
 For deterministic project setup, let Crucible write the scaffold instead of asking Codex to hand-author files:
 

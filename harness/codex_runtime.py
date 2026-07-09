@@ -25,6 +25,18 @@ class CodexAttemptResult(HarnessModel):
     patch_created: bool
 
 
+def codex_attempt_summary(result: CodexAttemptResult) -> dict[str, object]:
+    return {
+        "status": result.status,
+        "model": result.model,
+        "role": result.role,
+        "approval_mode": result.approval_mode,
+        "sandbox": result.sandbox,
+        "patch_created": result.patch_created,
+        "patch_path": result.patch_path,
+    }
+
+
 def run_codex_attempt(
     task_dir: Path | str,
     *,

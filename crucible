@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 
 if command -v uv >/dev/null 2>&1; then
   if [[ "${1:-}" == "run-codex-task" ]]; then
@@ -11,8 +12,18 @@ if command -v uv >/dev/null 2>&1; then
 fi
 
 if command -v python3 >/dev/null 2>&1; then
-  exec python3 -m harness.main "$@"
+  if python3 - <<'PY'
+import importlib.util
+import sys
+
+required = ("click", "pydantic", "yaml")
+ok = sys.version_info >= (3, 13) and all(importlib.util.find_spec(name) for name in required)
+raise SystemExit(0 if ok else 1)
+PY
+  then
+    exec python3 -m harness.main "$@"
+  fi
 fi
 
-echo "Crucible requires uv or python3 in PATH." >&2
+echo "Crucible requires uv or Python 3.13+ with click, pydantic, and pyyaml." >&2
 exit 1

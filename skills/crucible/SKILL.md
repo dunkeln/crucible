@@ -1,57 +1,39 @@
 ---
 name: crucible
-description: Use when a user wants Codex to create verifier-backed coding tasks, run or inspect Crucible harness attempts, score rewards from objective verifier output, curate teacher repairs, or export SFT/RLVR dataset rows.
+description: Use when Codex should turn existing project work or data sources into verifier-backed Crucible tasks, run attempts, inspect evidence, or promote learning rows.
 ---
 
 # Crucible
 
-Project face: `assets/logo.png`.
+No reward without a verifier.
 
-Crucible turns a code repo into a verifiable training gym for small models.
+Resolve the bundled CLI at `../../crucible` relative to this `SKILL.md`. Use that path as `<crucible>`.
 
-The rule is: no reward without a verifier.
-
-## Use this workflow
-
-1. Read `README.md`, `AGENTS.md`, `CONTRIBUTIONS.md`, and `harness/README.md`.
-2. Identify the seam before editing: harness, demo surface, or task/verifier corpus.
-3. Keep the task bounded and verifier-backed.
-4. Use the harness CLI for evidence:
+Start here:
 
 ```bash
-./crucible run-task harness/examples/basic-python --promote
+<crucible> doctor
 ```
 
-5. Inspect the run artifacts before claiming success:
+Use Crucible as a harness worker, not a general helper.
 
-```text
-.crucible/runs/<run_id>/trace.txt
-.crucible/runs/<run_id>/reward.json
-.crucible/runs/<run_id>/observation.json
-.crucible/runs/<run_id>/sft.jsonl
-.crucible/runs/<run_id>/rlvr.jsonl
-```
+1. Inspect the user's project shape before assuming files.
+2. Name the seam: harness, ingress adapter, demo surface, or task/verifier corpus.
+3. Prefer an existing pack before rediscovering tasks.
+4. Run the harness before reporting success.
+5. Report compact evidence paths; use full JSON only for debugging.
+6. Never promote without a passing verifier and teacher repair.
 
-## Codex operator modes
-
-Use hardcoded operator roles through the harness, not ad hoc prompting:
-
-+ `research_assistant`: inspect tasks, summarize failures, propose reward questions, and avoid writes.
-+ `operator`: prepare patches, verifier commands, reward records, and teacher repairs, but leave promotion to human approval.
-
-For operator prompts, run:
+Fast paths:
 
 ```bash
-./crucible operator-brief research_assistant --task-dir harness/examples/basic-python
-./crucible operator-brief operator --run-dir .crucible/runs/<run_id>
+<crucible> run-pack <pack-path> --project <project>
+<crucible> list-runs --project <project> --limit 5
+<crucible> summarize-run .crucible/projects/<project>/runs/<run_id>
 ```
 
-## Do not build
+When intent is missing, ask in numbered Markdown options.
 
-+ hosted RL training
-+ model hosting
-+ annotation ops
-+ generic agent marketplace
-+ full observability
+Do not assume `data/`, `metadata.json`, `task.md`, or `verifier.yaml` already exist. Generate recipe artifacts around the source that exists.
 
-Build local verifier-backed data generation.
+Keep verifier, reward, rubric, and judge code in the user's project workspace.

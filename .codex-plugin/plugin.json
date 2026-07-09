@@ -1,10 +1,9 @@
 {
   "name": "crucible",
   "version": "0.1.0",
-  "description": "Codex-native RLVR harness for verifier-backed coding tasks and inspectable SFT/RLVR datasets.",
+  "description": "Codex-native harness for turning checked repository work into reusable learning signal.",
   "author": {
     "name": "Crucible",
-    "email": "crucible@example.com",
     "url": "https://github.com/dunkeln/crucible"
   },
   "homepage": "https://github.com/dunkeln/crucible",
@@ -12,17 +11,17 @@
   "license": "MIT",
   "keywords": [
     "codex",
-    "rlvr",
-    "sft",
+    "harness",
     "verifiers",
+    "evidence",
     "datasets",
     "evals"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Crucible",
-    "shortDescription": "Turn repos into verifier-backed RLVR data",
-    "longDescription": "Use Crucible in Codex to generate bounded coding tasks, run attempts through verifiers, inspect reward evidence, curate teacher repairs, and export SFT/RLVR JSONL rows.",
+    "shortDescription": "Turn checked work into learning signal",
+    "longDescription": "Use Crucible in Codex to create bounded tasks, run attempts through verifiers, inspect reward evidence, curate repairs, and promote reusable learning rows.",
     "developerName": "Crucible",
     "category": "Developer Tools",
     "capabilities": [
@@ -34,7 +33,7 @@
     "composerIcon": "./assets/logo.png",
     "logo": "./assets/logo.png",
     "defaultPrompt": [
-      "Use Crucible to inspect this repo for RLVR tasks",
+      "Use Crucible to inspect this repo for checked tasks",
       "Run the Crucible demo harness and summarize reward evidence",
       "Use Crucible to curate a verifier-backed teacher repair"
     ],

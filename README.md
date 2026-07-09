@@ -6,35 +6,41 @@
 
 <h1 align="center">crucible</h1>
 
-**Codex turns checked work into learning signal.**
+**Codex turns proven work into learning signal.**
 
-Crucible is a Codex plugin for work that needs proof.
+Crucible is a Codex plugin for work that should leave evidence behind.
 
-It gives Codex a simple loop:
+It gives Codex a working shape:
 
 ```text
 attempt -> check -> evidence -> promotion
 ```
 
-Codex can still write. Codex can still repair. Codex can still explain. The difference is that every useful step leaves a trail a human can inspect.
+Codex still writes, repairs, and explains. Crucible makes the useful parts survive the session.
 
 ## The Product
 
-A coding agent can finish a task and still leave you with a question:
+Most agent work disappears into a chat transcript.
 
-```text
-Should this become something we teach from?
-```
+That is fine for a one-off fix. It is weak for research, evaluation, and training, where the useful object is not only the answer. The useful object is the attempt, the check, the failure, the repair, and the reason it was worth keeping.
 
-Crucible makes that question answerable.
-
-It keeps the task, the attempt, the check, the output, the reward, and the repair together. A failed attempt is not noise. It is the shape of the lesson.
+Crucible turns that into a row with a trail.
 
 ```text
 repo -> task -> attempt -> check -> evidence -> learning row
 ```
 
-The row can later feed whatever training path the researcher cares about. The README does not need to sell the acronym. The value is that the row has proof attached.
+A failed attempt is not waste. It shows where the model's path bent away from the verifier. A repair is not just a patch. It is the correction the next model should see.
+
+```text
+The question changes from:
+"Did Codex finish?"
+
+to:
+"What did this run prove?"
+```
+
+That is the product: not a larger agent, a cleaner loop.
 
 ## The Rule
 
@@ -42,29 +48,37 @@ The row can later feed whatever training path the researcher cares about. The RE
 No reward without a verifier.
 ```
 
-A verifier is an executable check that can say what happened. In the current harness, it is just a command in `verifier.yaml`.
+A verifier is the boundary between a plausible answer and a usable signal. It stays close to the project, because the project knows what truth looks like.
 
-The check stays close to the project. Crucible does not hide reward logic in the plugin cache. It copies the task repo into a run workspace, executes the verifier there, and records what happened.
+## The Numbers
 
-## The Compression
+The honest measurement is a real Codex session doing real work, scored against the diff and artifacts it leaves behind.
 
-Without a harness, the human carries the whole run in their head.
+Same task. Same model. Same repo. With and without Crucible.
+
+![Benchmark bars](examples/numbers/benchmark.svg)
+
+Numbers live in [examples/numbers/](examples/numbers/). Cost is only real when the run includes token usage, model name, and current per-token pricing.
+
+## The Shape
+
+Without a harness, the operator carries the run in their head.
 
 ```text
 read task -> inspect attempt -> run check -> read logs -> judge failure -> write repair -> decide what stays
 ```
 
-With Crucible, the repeatable work becomes an evidence trail.
+Crucible moves the repeatable parts into the artifact.
 
 ```text
-work held by the human
+operator load
 
 before Crucible  |████████████████████████████████████████| everything
 after Crucible   |████████                                | promote or reject
-                  capture, observe, verify, and package move into the harness
+                  the trail carries the rest
 ```
 
-The loop gets faster because the slow part gets smaller.
+The loop does not become magic. It becomes smaller in the place that used to be most expensive.
 
 ## The Operator Split
 
@@ -74,9 +88,9 @@ Crucible checks.
 The human promotes.
 ```
 
-Codex may draft the task, verifier, patch, or repair. Crucible runs the check and records the result. The human keeps the gate where judgment matters.
+Codex may draft the task, verifier, patch, or repair. Crucible runs the check and records the result. The human keeps the gate where judgment belongs.
 
-That is the useful boundary: Codex can help create the evidence, but it should not quietly approve its own lesson.
+The useful boundary is simple: Codex can help make the evidence, but it does not quietly approve its own lesson.
 
 ## Why It Feels Easier
 
@@ -92,48 +106,15 @@ Then ask Codex for a checked task, a verifier-backed repair, or a learning row. 
 
 ## What Works Today
 
-Run the demo task:
+The plugin, harness, locked task pack, and benchmark card are in this repo.
 
-```bash
-./crucible run-task harness/examples/basic-python --promote
-```
+Codex gets a stable factory instead of inventing the same task shape every time. The harness keeps the evidence trail. The public proof lives in [examples/numbers/](examples/numbers/), and the operator commands live in [harness/README.md](harness/README.md).
 
-That command copies the example repo, applies the attempt, runs the verifier, writes the run evidence, and promotes the passing row.
+## Built For Codex
 
-Evidence lands here:
+Crucible is installed as a Codex plugin, then used inside the repo where the work already happens.
 
-```text
-.crucible/projects/<project>/runs/<run_id>/
-```
-
-Useful commands:
-
-```bash
-./crucible operator-brief researcher --task-dir harness/examples/basic-python
-./crucible operator-brief operator --run-dir .crucible/projects/<project>/runs/<run_id>
-./crucible scaffold math-rlvr --package crucible_demos
-```
-
-If the copied project has `uv.lock`, Python verifiers run in that project environment:
-
-```text
-uv run --project . python check.py
-```
-
-## Plugin Shape
-
-Crucible ships as a Codex plugin:
-
-```text
-.codex-plugin/plugin.json
-.codex-plugin/skills/crucible/SKILL.md
-harness/
-knowledge/
-```
-
-The skill tells Codex how to behave: inspect first, choose the seam, use the harness, and report evidence.
-
-The compact doctrine layer lives in [knowledge/](knowledge/). It gives Codex memory without making the memory the runtime.
+The skill tells Codex how to behave: inspect first, choose the seam, use the harness, and report evidence. It stays small so Codex loads the workflow, not the whole repo story.
 
 ## Contributing
 
