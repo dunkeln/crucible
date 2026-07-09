@@ -42,13 +42,7 @@ The row can later feed whatever training path the researcher cares about. The RE
 No reward without a verifier.
 ```
 
-A verifier is any executable check that can say what happened:
-
-+ a test
-+ a script
-+ a SQL assertion
-+ a data-quality check
-+ a small judge program
+A verifier is an executable check that can say what happened. In the current harness, it is just a command in `verifier.yaml`.
 
 The check stays close to the project. Crucible does not hide reward logic in the plugin cache. It copies the task repo into a run workspace, executes the verifier there, and records what happened.
 
