@@ -17,12 +17,16 @@ Start from the smallest existing state.
 
 Use Crucible as a harness worker, not a general helper.
 
-1. Inspect the user's project shape before assuming files.
-2. Name the seam: harness, ingress adapter, demo surface, or task/verifier corpus.
-3. Prefer an existing pack before rediscovering tasks.
-4. Use `next` for follow-up turns so Codex edits from a compact brief.
-5. Run the harness before reporting success.
+Loose prose is intent, not permission to rediscover the repo.
+
+1. If `.crucible/pack.lock.json` exists, run `next` before reading task files.
+2. Treat the `next` brief as working memory.
+3. Edit only files listed by an operator brief.
+4. Read full traces only when the brief points to failed evidence.
+5. Run the listed harness check before reporting success.
 6. Never promote without a passing verifier and teacher repair.
+
+If no pack exists, inspect the project shape once, name the seam, and create the smallest recipe pack around what exists.
 
 Fast paths:
 
@@ -37,7 +41,7 @@ Fast paths:
 
 Use full JSON only when debugging a run.
 
-When intent is missing, ask in numbered Markdown options.
+When intent is missing, ask in numbered Markdown options. One task per turn; choose the first failed task unless the user names another.
 
 Do not assume `data/`, `metadata.json`, `task.md`, or `verifier.yaml` already exist. Generate recipe artifacts around the source that exists.
 
