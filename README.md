@@ -10,6 +10,10 @@
 
 Crucible is a Codex plugin for work that should leave evidence behind.
 
+<p align="center">
+  <img src="assets/marketplace.png" alt="Crucible installed in Codex" width="860" />
+</p>
+
 It gives Codex a working shape:
 
 ```text
